@@ -50,24 +50,78 @@ export class NewIamwebOrderModel {
     let info = '{';
     for (let index = 0; index < forms.length; index++) {
       const element = forms[index];
+      let isInfoJson = false;
 
       // 탑승일
-      if (DefaultConfig.iamwebApi.lang.boardingDate.includes(element.title)) {
+      if (
+        DefaultConfig.iamwebApi.lang.options.boardingDate.includes(
+          element.title,
+        )
+      ) {
         this.boarding_date = element.value;
       }
       // 탑승일시간
       else if (
-        DefaultConfig.iamwebApi.lang.boardingTime.includes(element.title)
+        DefaultConfig.iamwebApi.lang.options.boardingTime.includes(
+          element.title,
+        )
       ) {
         this.boarding_time = element.value;
       } else {
-        info += `"${element.title}":"${element.value}"`;
-        if (forms.length - 1 > index) {
-          info += ',';
+        // SNS 채널
+        if (
+          DefaultConfig.iamwebApi.lang.options.snsChannel.includes(
+            element.title,
+          )
+        ) {
+          info += `"${DefaultConfig.iamwebApi.lang.options.snsChannel[0]}":"${element.value}"`;
+          isInfoJson = true;
         }
+        // SNS 아이디
+        else if (
+          DefaultConfig.iamwebApi.lang.options.snsId.includes(element.title)
+        ) {
+          info += `"${DefaultConfig.iamwebApi.lang.options.snsId[0]}":"${element.value}"`;
+          isInfoJson = true;
+        }
+        // 승객수
+        else if (
+          DefaultConfig.iamwebApi.lang.options.passengers.includes(
+            element.title,
+          )
+        ) {
+          info += `"${DefaultConfig.iamwebApi.lang.options.passengers[0]}":"${element.value}"`;
+          isInfoJson = true;
+        }
+        // 비행편
+        else if (
+          DefaultConfig.iamwebApi.lang.options.flight.includes(element.title)
+        ) {
+          info += `"${DefaultConfig.iamwebApi.lang.options.flight[0]}":"${element.value}"`;
+          isInfoJson = true;
+        }
+        // 이착륙시간
+        else if (
+          DefaultConfig.iamwebApi.lang.options.lading.includes(element.title)
+        ) {
+          info += `"${DefaultConfig.iamwebApi.lang.options.lading[0]}":"${element.value}"`;
+          isInfoJson = true;
+        }
+        // 기타
+        else if (
+          DefaultConfig.iamwebApi.lang.options.other.includes(element.title)
+        ) {
+          info += `"${DefaultConfig.iamwebApi.lang.options.other[0]}":"${element.value}"`;
+          isInfoJson = true;
+        }
+      }
+      if (forms.length - 1 > index && isInfoJson === true) {
+        info += ',';
+        isInfoJson = false;
       }
     }
     info += '}';
+    console.log(info);
     this.info = JSON.parse(info);
   }
 }

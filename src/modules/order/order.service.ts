@@ -78,7 +78,6 @@ export class OrderService {
         where = { ...where, company: condition.company };
       }
       count = await tx.orders.count({ where });
-      console.log(where);
       orders = await tx.orders.findMany({
         where,
         skip,

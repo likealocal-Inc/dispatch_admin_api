@@ -26,6 +26,7 @@ export class IamwebOrderBatch {
       await this.iamwebUtils.getOrderListFromIamweb(this.prisma);
 
     if (res === undefined) return;
+
     for (let index = 0; index < res.length; index++) {
       const d = res[index];
       await this.prisma.orders.create({
