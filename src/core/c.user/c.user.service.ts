@@ -91,21 +91,28 @@ export class CUserService {
     // 패스워드값이 안넘어 왔으면 업데이트 안함
     if (
       updateCUserDto.password === undefined ||
+      updateCUserDto.password === null ||
       updateCUserDto.password.trim() === ''
     ) {
       return await this.prisma.user.update({
         where: { id },
         data: {
-          email: updateCUserDto.email,
-          company: updateCUserDto.company,
           phone: updateCUserDto.phone,
+          position: updateCUserDto.position,
+          name: updateCUserDto.name,
+        },
+      });
+    } else {
+      return await this.prisma.user.update({
+        where: { id },
+        data: {
+          password: updateCUserDto.password,
+          phone: updateCUserDto.phone,
+          position: updateCUserDto.position,
+          name: updateCUserDto.name,
         },
       });
     }
-    return await this.prisma.user.update({
-      where: { id },
-      data: updateCUserDto,
-    });
   }
 
   async updateAcive(id: string, active: boolean): Promise<CUserEntity> {

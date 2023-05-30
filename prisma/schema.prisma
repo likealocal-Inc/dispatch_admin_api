@@ -70,6 +70,7 @@ model Orders{
   else02 String
 
   status OrderStatus @default(DISPATCH_ING)
+  company String 
 
   userId String
 }

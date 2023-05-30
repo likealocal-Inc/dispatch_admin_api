@@ -23,6 +23,7 @@ export class ListOrderDto implements Orders {
   status: OrderStatus;
   userId: string;
   user: CUserEntity;
+  company: string;
 
   constructor(orderEntidy: OrderEntity) {
     this.id = orderEntidy.id;
@@ -44,5 +45,6 @@ export class ListOrderDto implements Orders {
     this.else02 = orderEntidy.else02;
     this.status = orderEntidy.status;
     this.userId = orderEntidy.userId;
+    this.company = orderEntidy.company;
   }
 }

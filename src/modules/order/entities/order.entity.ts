@@ -20,4 +20,5 @@ export class OrderEntity implements Orders {
   else02: string;
   status: OrderStatus;
   userId: string;
+  company: string;
 }

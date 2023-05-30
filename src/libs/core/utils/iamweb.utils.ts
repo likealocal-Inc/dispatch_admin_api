@@ -79,46 +79,59 @@ export class IamwebUtils {
 
     const options = item.items[0].options[0][0];
 
+    // 옵션값 구조
+    /**
+     "option_name_list": [
+        "目的地の場所名(例：ロッテホテル・ソウル)",
+        "目的地の住所(例：ソウル 中区 乙支路 30)",
+        "出発空港"
+    ],
+    "value_name_list": [
+        "YOU &I美容クリニック",
+        "ソウル江南区江南大路470808タワー6階",
+        "仁川空港(1ターミナル)"
+    ],
+     */
     for (let index = 0; index < options.option_name_list.length; index++) {
-      const iamData = options.option_name_list[index];
+      const iamNameData = options.option_name_list[index];
 
-      const startName = DefaultConfig.iamwebApi.lang.start_name.filter(
+      const startName = DefaultConfig.iamwebApi.lang.startName.filter(
         (d, k) => {
-          return iamData.includes(d);
+          return iamNameData.includes(d);
         },
       );
       if (startName.length > 0) {
         iamwebOrderModel.start_name = options.value_name_list[index];
       }
 
-      const startAddress = DefaultConfig.iamwebApi.lang.start_address.filter(
+      const startAddress = DefaultConfig.iamwebApi.lang.startAddress.filter(
         (d, k) => {
-          return iamData.includes(d);
+          return iamNameData.includes(d);
         },
       );
       if (startAddress.length > 0) {
         iamwebOrderModel.start_address = options.value_name_list[index];
       }
 
-      const goalName = DefaultConfig.iamwebApi.lang.goal_name.filter((d, k) => {
-        return iamData.includes(d);
+      const goalName = DefaultConfig.iamwebApi.lang.goalName.filter((d, k) => {
+        return iamNameData.includes(d);
       });
       if (goalName.length > 0) {
         iamwebOrderModel.goal_name = options.value_name_list[index];
       }
 
-      const goalAddress = DefaultConfig.iamwebApi.lang.goal_address.filter(
+      const goalAddress = DefaultConfig.iamwebApi.lang.goalAddress.filter(
         (d, k) => {
-          return iamData.includes(d);
+          return iamNameData.includes(d);
         },
       );
       if (goalAddress.length > 0) {
         iamwebOrderModel.goal_address = options.value_name_list[index];
       }
 
-      const startAirport = DefaultConfig.iamwebApi.lang.start_airport.filter(
+      const startAirport = DefaultConfig.iamwebApi.lang.startAirport.filter(
         (d, k) => {
-          return iamData.includes(d);
+          return iamNameData.includes(d);
         },
       );
       if (startAirport.length > 0) {
@@ -127,9 +140,9 @@ export class IamwebUtils {
         iamwebOrderModel.start_address = options.value_name_list[index];
       }
 
-      const goalAirport = DefaultConfig.iamwebApi.lang.goal_airport.filter(
+      const goalAirport = DefaultConfig.iamwebApi.lang.goalAirport.filter(
         (d, k) => {
-          return iamData.includes(d);
+          return iamNameData.includes(d);
         },
       );
       if (goalAirport.length > 0) {

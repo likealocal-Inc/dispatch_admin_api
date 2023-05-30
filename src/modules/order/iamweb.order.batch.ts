@@ -49,6 +49,7 @@ export class IamwebOrderBatch {
 
           information: JSON.stringify(d.info),
 
+          company: 'likealocal',
           else01: '',
           else02: '',
 

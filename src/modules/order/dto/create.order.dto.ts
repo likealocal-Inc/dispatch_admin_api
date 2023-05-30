@@ -6,6 +6,7 @@ export class CreateOrderDto {
   goalLocation: string;
   goalAddress: string;
   information: string;
+  company: string;
   else01: string;
   else02: string;
 }

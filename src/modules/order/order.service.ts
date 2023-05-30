@@ -7,6 +7,7 @@ import { CUserService } from 'src/core/c.user/c.user.service';
 import { OrderEntity } from './entities/order.entity';
 import { CUserEntity } from 'src/core/c.user/entities/c.user.entity';
 import { ListOrderDto } from './dto/list.order.dto';
+import { Company } from '@prisma/client';
 
 @Injectable()
 export class OrderService {
@@ -16,6 +17,7 @@ export class OrderService {
   ) {}
 
   async create(createOrderDto: CreateOrderDto, userId: string) {
+    const user = await this.userService.findId(userId);
     return this.prisma.orders.create({
       data: {
         ...createOrderDto,
@@ -26,6 +28,7 @@ export class OrderService {
         iamwebOrderNo: '',
         else01: '',
         else02: '',
+        company: user.company,
         orderTime: '' + Date.now().toString().substring(0, 10),
       },
     });
@@ -64,10 +67,20 @@ export class OrderService {
     let orders;
     const skip = +pagingDto.page * +pagingDto.size;
     const take = +pagingDto.size;
+    const condition = JSON.parse(pagingDto.condition);
 
     await this.prisma.$transaction(async (tx) => {
-      count = await tx.orders.count();
+      let where: any = {};
+      if (condition.status !== undefined && condition.status !== 'ALL') {
+        where = { ...where, status: condition.status };
+      }
+      if (condition.company !== undefined && condition.company !== 'ALL') {
+        where = { ...where, company: condition.company };
+      }
+      count = await tx.orders.count({ where });
+      console.log(where);
       orders = await tx.orders.findMany({
+        where,
         skip,
         take,
         orderBy: { created: 'desc' },
