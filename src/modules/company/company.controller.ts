@@ -41,7 +41,7 @@ export class CompanyController {
   async findOne(@Param('id') id: string) {
     return HttpUtils.makeAPIResponse(
       true,
-      await this.companyService.findOne(id),
+      await this.companyService.findOneById(id),
     );
   }
 

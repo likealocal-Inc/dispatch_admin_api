@@ -104,5 +104,10 @@ export const ExceptionCodeList = {
       '이미 회사명 존재',
       HttpStatus.BAD_REQUEST,
     ),
+    INACTIVE_COMPANY: new ExceptionCode(
+      'INACTIVE_COMPANY',
+      '현재 회사는 비활성화 상태',
+      HttpStatus.BAD_REQUEST,
+    ),
   },
 };

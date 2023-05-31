@@ -45,8 +45,12 @@ export class CompanyService {
     };
   }
 
-  findOne(id: string) {
+  findOneById(id: string) {
     return this.prisma.company.findFirst({ where: { id } });
+  }
+
+  findOneByName(name: string) {
+    return this.prisma.company.findFirst({ where: { name } });
   }
 
   update(id: string, updateCompanyDto: UpdateCompanyDto) {

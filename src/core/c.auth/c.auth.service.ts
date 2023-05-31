@@ -9,13 +9,11 @@ import { CAuthUtils } from './c.auth.utils';
 import { EmailLoginDto } from './dto/email.login.dto';
 import { Role } from '@prisma/client';
 import { CUserEntity } from '../c.user/entities/c.user.entity';
-import {
-  ExceptionCode,
-  ExceptionCodeList,
-} from 'src/config/core/exceptions/exception.code';
+import { ExceptionCodeList } from 'src/config/core/exceptions/exception.code';
 import { DefaultConfig } from 'src/config/default.config';
 import { CustomException } from 'src/config/core/exceptions/custom.exception';
 import { LoginResponseDto } from './dto/login.response.dto';
+import { CompanyService } from 'src/modules/company/company.service';
 
 @Injectable()
 export class CAuthService {
@@ -25,6 +23,7 @@ export class CAuthService {
     private readonly cUserService: CUserService,
     private readonly jwtService: JwtService,
     private readonly sessionService: CSessionService,
+    private readonly companyService: CompanyService,
   ) {
     this.cAuthUtils = new CAuthUtils(this.prisma);
   }
@@ -99,6 +98,11 @@ export class CAuthService {
       throw new CustomException(ExceptionCodeList.AUTH.IN_ACTIVITY);
     }
 
+    // 회사 활성화 여부 체크
+    const company = await this.companyService.findOneByName(dbUser.company);
+    if (company.isActive === false) {
+      throw new CustomException(ExceptionCodeList.COMPANY.INACTIVE_COMPANY);
+    }
     return await this.makeResponseAfterSession(dbUser);
   }
 

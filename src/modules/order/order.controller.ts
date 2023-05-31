@@ -38,11 +38,11 @@ export class OrderController {
 
   @AUTH_MUST()
   @Get()
-  async findAll(@Query() pagingDto: PagingDto) {
+  async findAll(@Query() pagingDto: PagingDto, @Req() req: any) {
     try {
       return HttpUtils.makeAPIResponse(
         true,
-        await this.orderService.listOrderWithUser(pagingDto),
+        await this.orderService.listOrderWithUser(pagingDto, req.user),
       );
     } catch {
       throw new CustomException(ExceptionCodeList.ERROR);

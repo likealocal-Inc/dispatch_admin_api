@@ -7,7 +7,7 @@ import { CUserService } from 'src/core/c.user/c.user.service';
 import { OrderEntity } from './entities/order.entity';
 import { CUserEntity } from 'src/core/c.user/entities/c.user.entity';
 import { ListOrderDto } from './dto/list.order.dto';
-import { Company } from '@prisma/client';
+import { Company, Role } from '@prisma/client';
 
 @Injectable()
 export class OrderService {
@@ -39,8 +39,10 @@ export class OrderService {
    * @param pagingDto
    * @returns
    */
-  async listOrderWithUser(pagingDto: PagingDto) {
-    const orders = await this.findAll(pagingDto);
+  async listOrderWithUser(pagingDto: PagingDto, user: any) {
+    const nowUser = await this.userService.findId(user.id);
+    const orders = await this.findAll(pagingDto, nowUser);
+
     const res = { count: orders.count, data: [] };
     const data = [];
     const userMap = new Map<string, CUserEntity>();
@@ -62,7 +64,7 @@ export class OrderService {
     return res;
   }
 
-  async findAll(pagingDto: PagingDto) {
+  async findAll(pagingDto: PagingDto, user = null) {
     let count;
     let orders;
     const skip = +pagingDto.page * +pagingDto.size;
@@ -71,9 +73,18 @@ export class OrderService {
 
     await this.prisma.$transaction(async (tx) => {
       let where: any = {};
+
+      // User 정보가 있고 일반 사용자(업체)면 해당 업체의 테이터만 조회
+      if (user !== null && user.role === Role.USER) {
+        where = { ...where, company: user.company };
+      }
+
+      // 상태값
       if (condition.status !== undefined && condition.status !== 'ALL') {
         where = { ...where, status: condition.status };
       }
+
+      // 업체
       if (condition.company !== undefined && condition.company !== 'ALL') {
         where = { ...where, company: condition.company };
       }
