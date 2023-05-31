@@ -51,10 +51,13 @@ export class CUserController {
   @AUTH_MUST()
   @Get()
   @ApiCreatedResponse({ type: CUserEntity, isArray: true })
-  async findAll(@Query() findUserDto: FindUserDto): Promise<APIResponseObj> {
+  async findAll(
+    @Query() findUserDto: FindUserDto,
+    @Req() req: any,
+  ): Promise<APIResponseObj> {
     return HttpUtils.makeAPIResponse(
       true,
-      await this.cUserService.findAllPaging(findUserDto),
+      await this.cUserService.findAllPaging(findUserDto, req.user.id),
     );
   }
 

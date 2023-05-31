@@ -40,14 +40,22 @@ export class CUserService {
 
   async findAllPaging(
     findUserDto: FindUserDto,
+    userId = '-1',
   ): Promise<FindResposeDto<CUserEntity[]>> {
     let count;
     const size = +findUserDto.size;
     const page = +findUserDto.page;
     let users;
     await this.prisma.$transaction(async (tx) => {
+      const user = await this.findId(userId);
+      let where = {};
+      if (user.role === Role.ADMIN) {
+        where = { role: Role.USER };
+      }
+      console.log(where);
       count = await tx.user.count();
       users = await tx.user.findMany({
+        where,
         skip: page,
         take: size,
         orderBy: {

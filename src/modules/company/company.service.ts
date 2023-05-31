@@ -29,9 +29,13 @@ export class CompanyService {
     const size = +pagingDto.size;
     const page = +pagingDto.page;
     await this.prisma.$transaction(async (tx) => {
-      count = await tx.company.count();
+      let where = {};
+      if (pagingDto.isAllList === false) {
+        where = { isActive: false };
+      }
+      count = await tx.company.count({ where });
       orders = await tx.company.findMany({
-        where: { isActive: true },
+        where,
         skip: page,
         take: size,
         orderBy: { name: 'asc' },
