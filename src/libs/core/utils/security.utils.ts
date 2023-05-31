@@ -6,6 +6,9 @@ import {
 } from 'crypto';
 import * as bcrypt from 'bcrypt';
 import { DefaultConfig } from 'src/config/default.config';
+import CryptoJS from 'crypto-js';
+import { CustomException } from 'src/config/core/exceptions/custom.exception';
+import { ExceptionCodeList } from 'src/config/core/exceptions/exception.code';
 
 /**
  * 암호화
@@ -25,11 +28,8 @@ export const SecurityUtils = {
    * @param text
    * @returns
    */
-  encryptData: async (data: any): Promise<Buffer> => {
-    const iv = randomBytes(16);
-    const cipher = createCipheriv(SecurityUtils.alg, SecurityUtils.key, iv);
-    const result = Buffer.concat([iv, cipher.update(data), cipher.final()]);
-    return result;
+  encryptData: async (data: any): Promise<string> => {
+    return CryptoJS.AES.encrypt(data, SecurityUtils.key);
   },
 
   /**
@@ -38,11 +38,12 @@ export const SecurityUtils = {
    * @returns
    */
   decryptData: async (_data: any): Promise<string> => {
-    const iv = _data.slice(0, 16);
-    const data = _data.slice(16);
-    const decipher = createDecipheriv(SecurityUtils.alg, SecurityUtils.key, iv),
-      result = Buffer.concat([decipher.update(data), decipher.final()]);
-    return result.toString();
+    try {
+      const bytes = CryptoJS.AES.decrypt(_data, SecurityUtils.key);
+      return bytes.toString(CryptoJS.enc.Utf8);
+    } catch (err) {
+      throw new CustomException(ExceptionCodeList.ERROR, '복호화오류');
+    }
   },
 
   /**
@@ -50,7 +51,7 @@ export const SecurityUtils = {
    * @param data
    * @returns
    */
-  bcryptData: async (data: string): Promise<string> => {
+  oneWayEncryptData: async (data: string): Promise<string> => {
     const saltOrRounds = 10;
     const hash = await bcrypt.hash(data, saltOrRounds);
     return hash;
@@ -62,7 +63,10 @@ export const SecurityUtils = {
    * @param data 원본데이터
    * @returns
    */
-  compareBcryptData: async (hash: string, data: string): Promise<boolean> => {
+  oneWayCompareBcryptData: async (
+    hash: string,
+    data: string,
+  ): Promise<boolean> => {
     return await bcrypt.compare(data, hash);
   },
 

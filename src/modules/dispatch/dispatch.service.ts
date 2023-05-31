@@ -12,11 +12,36 @@ export class DispatchService {
   ) {}
 
   async create(createDispatchDto: CreateDispatchDto) {
-    return await this.prisma.dispatch.create({ data: createDispatchDto });
-  }
+    //return await this.prisma.dispatch.create({ data: createDispatchDto });
+    let res;
+    await this.prisma.$transaction(async (tx) => {
+      // 상태값 변경 값이 들어 오면 업데이트 처리 한다.
+      if (createDispatchDto.dispatchStatus !== '') {
+        await this.orderService.updateStatus(
+          createDispatchDto.orderId,
+          createDispatchDto.dispatchStatus,
+          tx,
+        );
+      }
+      res = await tx.dispatch.create({
+        data: {
+          carCompany: createDispatchDto.carCompany,
+          jiniName: createDispatchDto.jiniName,
+          carInfo: createDispatchDto.carInfo,
+          jiniPhone: createDispatchDto.jiniPhone,
+          baseFare: createDispatchDto.baseFare,
+          addFare: createDispatchDto.addFare,
+          totalFare: createDispatchDto.totalFare,
+          else01: createDispatchDto.else01,
+          else02: createDispatchDto.else02,
+          else03: createDispatchDto.else03,
+          orderId: createDispatchDto.orderId,
+          userId: createDispatchDto.userId,
+        },
+      });
+    });
 
-  findAll() {
-    return `This action returns all dispatch`;
+    return res;
   }
 
   async findOne(id: string) {

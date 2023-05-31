@@ -14,6 +14,7 @@ import { DefaultConfig } from 'src/config/default.config';
 import { CustomException } from 'src/config/core/exceptions/custom.exception';
 import { LoginResponseDto } from './dto/login.response.dto';
 import { CompanyService } from 'src/modules/company/company.service';
+import { SecurityUtils } from 'src/libs/core/utils/security.utils';
 
 @Injectable()
 export class CAuthService {
@@ -34,6 +35,9 @@ export class CAuthService {
    * @returns
    */
   async joinEmail(createJoinDto: CreateCUserDto): Promise<CUserEntity> {
+    createJoinDto.password = await SecurityUtils.oneWayEncryptData(
+      createJoinDto.password,
+    );
     return await this.cUserService.create(createJoinDto);
   }
 
@@ -91,7 +95,13 @@ export class CAuthService {
     if (dbUser === null || dbUser === undefined) {
       throw new CustomException(ExceptionCodeList.AUTH.UNAUTHORIZED);
     }
-    if (dbUser.password !== user.password) {
+
+    if (
+      (await SecurityUtils.oneWayCompareBcryptData(
+        dbUser.password,
+        user.password,
+      )) === false
+    ) {
       throw new CustomException(ExceptionCodeList.AUTH.WRONG_PASSWORD);
     }
     if (dbUser.isActive === false) {

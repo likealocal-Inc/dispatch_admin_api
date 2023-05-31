@@ -11,4 +11,5 @@ export class CreateDispatchDto {
   else03: string;
   userId: string;
   orderId: string;
+  dispatchStatus: string;
 }
