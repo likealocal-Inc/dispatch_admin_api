@@ -84,12 +84,15 @@ export class OrderController {
    * @returns
    */
   @AUTH_MUST()
-  @Patch('status/:id')
-  async updateDispatchRequestForIamweb(@Param('id') id: string) {
+  @Patch('status/:id/:status')
+  async updateDispatchRequestForIamweb(
+    @Param('id') id: string,
+    @Param('status') status: string,
+  ) {
     try {
       return HttpUtils.makeAPIResponse(
         true,
-        await this.orderService.updateStatus(id, OrderStatus.DISPATCH_ING),
+        await this.orderService.updateStatus(id, status),
       );
     } catch {
       throw new CustomException(ExceptionCodeList.ERROR);

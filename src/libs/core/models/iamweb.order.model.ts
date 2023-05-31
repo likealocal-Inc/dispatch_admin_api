@@ -31,6 +31,11 @@ export class NewIamwebOrderModel {
   goal_airport = '';
   waypoint = '';
 
+  // 시간대절
+  start_goal = '';
+  trip_route = '';
+  timezon = '';
+
   constructor(data: any) {
     this.order_no = data.order_no;
     this.order_time = data.order_time;
@@ -112,6 +117,9 @@ export class NewIamwebOrderModel {
           DefaultConfig.iamwebApi.lang.options.other.includes(element.title)
         ) {
           info += `"${DefaultConfig.iamwebApi.lang.options.other[0]}":"${element.value}"`;
+          isInfoJson = true;
+        } else {
+          info += `"${element.title}":"${element.value}"`;
           isInfoJson = true;
         }
       }

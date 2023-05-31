@@ -178,11 +178,11 @@ export const DefaultConfig = {
         'Departure/Destination',
       ],
       tripRoute: [
-        '여행 루트',
-        '旅行路线',
-        '旅行路線',
-        '旅行コース',
-        'Trip route',
+        '여행 루트 (경유지/도착지를 모두 적어주세요.)',
+        '旅行路线(请填写所有中转地及目的地)',
+        '旅行路線（請填寫所有經由地/到達地。）',
+        '旅行コース(経由地･到着地を全て入力してください。)',
+        'Trip route (Please write down all the courses you travel.)',
       ],
       timezon: ['대절 시간', '包车时间', '包車時間', '貸し切る時間', 'TIMEZON'],
       options: {

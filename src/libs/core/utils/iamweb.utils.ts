@@ -100,6 +100,7 @@ export class IamwebUtils {
     for (let index = 0; index < options.option_name_list.length; index++) {
       const iamNameData = options.option_name_list[index];
 
+      // 출발지먕
       const startName = DefaultConfig.iamwebApi.lang.startName.filter(
         (d, k) => {
           return iamNameData.includes(d);
@@ -109,6 +110,7 @@ export class IamwebUtils {
         iamwebOrderModel.start_name = options.value_name_list[index];
       }
 
+      // 출발지 주소
       const startAddress = DefaultConfig.iamwebApi.lang.startAddress.filter(
         (d, k) => {
           return iamNameData.includes(d);
@@ -118,6 +120,7 @@ export class IamwebUtils {
         iamwebOrderModel.start_address = options.value_name_list[index];
       }
 
+      // 도착지명
       const goalName = DefaultConfig.iamwebApi.lang.goalName.filter((d, k) => {
         return iamNameData.includes(d);
       });
@@ -125,6 +128,7 @@ export class IamwebUtils {
         iamwebOrderModel.goal_name = options.value_name_list[index];
       }
 
+      // 도착지주소
       const goalAddress = DefaultConfig.iamwebApi.lang.goalAddress.filter(
         (d, k) => {
           return iamNameData.includes(d);
@@ -134,6 +138,7 @@ export class IamwebUtils {
         iamwebOrderModel.goal_address = options.value_name_list[index];
       }
 
+      // 출발공항
       const startAirport = DefaultConfig.iamwebApi.lang.startAirport.filter(
         (d, k) => {
           return iamNameData.includes(d);
@@ -145,6 +150,7 @@ export class IamwebUtils {
         iamwebOrderModel.start_address = options.value_name_list[index];
       }
 
+      // 도착공항
       const goalAirport = DefaultConfig.iamwebApi.lang.goalAirport.filter(
         (d, k) => {
           return iamNameData.includes(d);
@@ -154,6 +160,36 @@ export class IamwebUtils {
         iamwebOrderModel.goal_airport = options.value_name_list[index];
         iamwebOrderModel.goal_name = options.value_name_list[index];
         iamwebOrderModel.goal_address = options.value_name_list[index];
+      }
+
+      // 출발지/도찱지
+      const startGoal = DefaultConfig.iamwebApi.lang.startGoal.filter(
+        (d, k) => {
+          return iamNameData.includes(d);
+        },
+      );
+      if (startGoal.length > 0) {
+        iamwebOrderModel.start_goal = options.value_name_list[index];
+      }
+
+      // 여행지루트
+      const tripRoute = DefaultConfig.iamwebApi.lang.tripRoute.filter(
+        (d, k) => {
+          return iamNameData.includes(d);
+        },
+      );
+      if (tripRoute.length > 0) {
+        iamwebOrderModel.trip_route = options.value_name_list[index];
+      }
+
+      // 대절시간
+      // 여행지루트
+      const timezon = DefaultConfig.iamwebApi.lang.timezon.filter((d, k) => {
+        return iamNameData.includes(d);
+      });
+      if (timezon.length > 0) {
+        iamwebOrderModel.timezon = options.value_name_list[index];
+        console.log(iamwebOrderModel.timezon);
       }
     }
 

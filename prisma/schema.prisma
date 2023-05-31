@@ -124,6 +124,7 @@ model Files{
 
 enum OrderStatus{
   IAMWEB_ORDER // 아임웹 주문
+  DISPATCH_REQUEST // 배차요청
   DISPATCH_ING  // 확인중
   DISPATCH_COMPLETE // 배차완료
   DISPATCH_NO       // 미배차
