@@ -51,7 +51,10 @@ export class IamwebOrderBatch {
           information: JSON.stringify(d.info),
 
           company: 'likealocal',
-          else01: `{"start_goal":"${d.start_goal}" ,"trip_route":"${d.trip_route}", "timezon":"${d.timezon}"}`,
+          else01:
+            d.start_goal === ''
+              ? ''
+              : `{"start_goal":"${d.start_goal}" ,"trip_route":"${d.trip_route}", "timezon":"${d.timezon}"}`,
           else02: '',
 
           userId: DefaultConfig.iamwebApi.iamwebOrderUserId,
