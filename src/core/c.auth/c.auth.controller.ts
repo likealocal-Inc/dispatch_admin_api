@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Logger, Req } from '@nestjs/common';
+import { Controller, Post, Body, Logger, Req, Get } from '@nestjs/common';
 import { CAuthService } from './c.auth.service';
 import {
   ApiBearerAuth,
@@ -19,6 +19,11 @@ export class CAuthController {
   private readonly logger = new Logger(CAuthController.name);
 
   constructor(private readonly cAuthService: CAuthService) {}
+
+  @Get('/healthcheck')
+  async healthcheck(): Promise<APIResponseObj> {
+    return await HttpUtils.makeAPIResponse(true);
+  }
 
   @ApiOperation({ summary: '이메일 회원가입' })
   @ApiCreatedResponse({ type: CUserEntity })
