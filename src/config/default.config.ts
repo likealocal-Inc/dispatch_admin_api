@@ -233,7 +233,8 @@ export const DefaultConfig = {
       },
     },
 
-    iamwebOrderUserId: '1',
+    iamwebOrderUserEmail: 'sj_han@likealocal.co.kr',
+    iamwebOrderUserCompany: 'likealocal',
   },
   telegram: {
     botKey: '6018333651:AAHcYRghyBYDo9BpY9Wd5xvrHXguwHxcbI4',

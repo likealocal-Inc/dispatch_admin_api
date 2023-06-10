@@ -12,4 +12,9 @@ export class CreateDispatchDto {
   userId: string;
   orderId: string;
   dispatchStatus: string;
+
+  carType: string;
+  payType: string;
+  memo: string;
+  exceedFare: number;
 }

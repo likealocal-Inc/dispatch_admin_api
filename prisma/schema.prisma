@@ -73,6 +73,13 @@ model Orders{
   company String 
 
   userId String
+
+
+  key Int @default(autoincrement())
+  customName String
+  customPhone String
+
+
 }
 
 model Dispatch {
@@ -93,6 +100,13 @@ model Dispatch {
 
   userId String
   orderId String
+
+//2023.06.09 추가
+  carType String
+  payType String
+  memo String
+  exceedFare  Int
+
 }
 
 model Token{

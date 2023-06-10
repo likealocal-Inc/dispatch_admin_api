@@ -21,4 +21,8 @@ export class OrderEntity implements Orders {
   status: OrderStatus;
   userId: string;
   company: string;
+
+  key: number;
+  customName: string;
+  customPhone: string;
 }

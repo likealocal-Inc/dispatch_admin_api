@@ -3,5 +3,4 @@ import { CreateDispatchDto } from './create.dispatch.dto';
 
 export class UpdateDispatchDto extends PartialType(CreateDispatchDto) {
   id: string;
-  dispatchStatus: string;
 }

@@ -25,6 +25,10 @@ export class ListOrderDto implements Orders {
   user: CUserEntity;
   company: string;
 
+  key: number;
+  customName: string;
+  customPhone: string;
+
   constructor(orderEntidy: OrderEntity) {
     this.id = orderEntidy.id;
     this.created = orderEntidy.created;
@@ -46,5 +50,9 @@ export class ListOrderDto implements Orders {
     this.status = orderEntidy.status;
     this.userId = orderEntidy.userId;
     this.company = orderEntidy.company;
+
+    this.key = orderEntidy.key;
+    this.customName = orderEntidy.customName;
+    this.customPhone = orderEntidy.customPhone;
   }
 }

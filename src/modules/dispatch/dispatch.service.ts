@@ -37,6 +37,12 @@ export class DispatchService {
           else03: createDispatchDto.else03,
           orderId: createDispatchDto.orderId,
           userId: createDispatchDto.userId,
+
+          // 2023.06.09 추가
+          carType: createDispatchDto.carType,
+          payType: createDispatchDto.payType,
+          memo: createDispatchDto.memo,
+          exceedFare: createDispatchDto.exceedFare,
         },
       });
     });
@@ -63,6 +69,7 @@ export class DispatchService {
           tx,
         );
       }
+      console.log(updateDispatchDto);
       res = await tx.dispatch.update({
         where: { id },
         data: {
@@ -77,6 +84,12 @@ export class DispatchService {
           else02: updateDispatchDto.else02,
           else03: updateDispatchDto.else03,
           orderId: updateDispatchDto.orderId,
+
+          // 2023.06.09 추가
+          carType: updateDispatchDto.carType,
+          payType: updateDispatchDto.payType,
+          memo: updateDispatchDto.memo,
+          exceedFare: updateDispatchDto.exceedFare,
         },
       });
     });

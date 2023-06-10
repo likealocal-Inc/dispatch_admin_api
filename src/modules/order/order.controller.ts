@@ -16,7 +16,6 @@ import { AUTH_MUST } from 'src/config/core/decorators/api/auth.must/auth.must.de
 import { PagingDto } from 'src/libs/core/dtos/paging';
 import { CustomException } from 'src/config/core/exceptions/custom.exception';
 import { ExceptionCodeList } from 'src/config/core/exceptions/exception.code';
-import { OrderStatus } from '@prisma/client';
 
 @Controller('order')
 export class OrderController {
@@ -26,12 +25,14 @@ export class OrderController {
   @Post()
   async create(@Body() createOrderDto: CreateOrderDto, @Req() req: any) {
     const user = req.user;
+    console.log(createOrderDto);
     try {
       return HttpUtils.makeAPIResponse(
         true,
         await this.orderService.create(createOrderDto, user.id),
       );
-    } catch {
+    } catch (err) {
+      console.log(err);
       throw new CustomException(ExceptionCodeList.ERROR);
     }
   }
@@ -44,7 +45,8 @@ export class OrderController {
         true,
         await this.orderService.listOrderWithUser(pagingDto, req.user),
       );
-    } catch {
+    } catch (err) {
+      console.log(err);
       throw new CustomException(ExceptionCodeList.ERROR);
     }
   }

@@ -32,6 +32,7 @@ import { CTelegramModule } from './core/c.telegram/c.telegram.module';
 import { CompanyModule } from './modules/company/company.module';
 import { OrderModule } from './modules/order/order.module';
 import { DispatchModule } from './modules/dispatch/dispatch.module';
+import { SetModule } from './modules/set/set.module';
 
 @Module({
   imports: [
@@ -65,6 +66,8 @@ import { DispatchModule } from './modules/dispatch/dispatch.module';
     OrderModule,
 
     DispatchModule,
+
+    SetModule,
   ],
   controllers: [],
   providers: [

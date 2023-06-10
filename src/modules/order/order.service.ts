@@ -18,6 +18,7 @@ export class OrderService {
 
   async create(createOrderDto: CreateOrderDto, userId: string) {
     const user = await this.userService.findId(userId);
+
     return this.prisma.orders.create({
       data: {
         ...createOrderDto,
@@ -93,7 +94,7 @@ export class OrderService {
         where,
         skip,
         take,
-        orderBy: { created: 'desc' },
+        orderBy: { orderTime: 'desc' },
       });
     });
     return {

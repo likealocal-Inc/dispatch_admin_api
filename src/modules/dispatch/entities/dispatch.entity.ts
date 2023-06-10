@@ -16,4 +16,9 @@ export class DispatchEntity implements Dispatch {
   else03: string;
   userId: string;
   orderId: string;
+
+  carType: string;
+  payType: string;
+  memo: string;
+  exceedFare: number;
 }

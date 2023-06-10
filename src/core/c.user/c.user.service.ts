@@ -8,6 +8,7 @@ import { ExceptionCodeList } from 'src/config/core/exceptions/exception.code';
 import { EmailLoginDto } from '../c.auth/dto/email.login.dto';
 import { Role } from '@prisma/client';
 import { FindUserDto } from './dto/find.user.dto';
+import { SecurityUtils } from 'src/libs/core/utils/security.utils';
 
 interface FindResposeDto<T> {
   count: number;
@@ -73,6 +74,7 @@ export class CUserService {
 
   // 아이디로 조회
   async findId(id: string): Promise<CUserEntity> {
+    console.log(id);
     const user = await this.prisma.user.findUnique({ where: { id } });
     user.password = '';
     return user;
@@ -111,6 +113,9 @@ export class CUserService {
         },
       });
     } else {
+      updateCUserDto.password = await SecurityUtils.oneWayEncryptData(
+        updateCUserDto.password,
+      );
       return await this.prisma.user.update({
         where: { id },
         data: {

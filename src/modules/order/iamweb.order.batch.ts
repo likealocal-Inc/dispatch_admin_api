@@ -24,6 +24,10 @@ export class IamwebOrderBatch {
   async orderBatch() {
     const info = '아임웹 주문데이터 조회';
     console.log(`----------- ${info} -------------`);
+
+    const user = await this.prisma.user.findFirst({
+      where: { email: DefaultConfig.iamwebApi.iamwebOrderUserEmail },
+    });
     try {
       const res: NewIamwebOrderModel[] =
         await this.iamwebUtils.getOrderListFromIamweb(this.prisma);
@@ -60,7 +64,10 @@ export class IamwebOrderBatch {
                 : `{"start_goal":"${d.start_goal}" ,"trip_route":"${d.trip_route}", "timezon":"${d.timezon}"}`,
             else02: '',
 
-            userId: DefaultConfig.iamwebApi.iamwebOrderUserId,
+            userId: user.id,
+
+            customName: '',
+            customPhone: '',
           },
         });
       }
