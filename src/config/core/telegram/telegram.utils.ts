@@ -28,7 +28,6 @@ export const TelegramUtils = {
   getChatRoomId: async (botKey: string) => {
     const url = `https://api.telegram.org/bot${botKey}/getUpdates`;
     const res = await axios.get(url);
-    console.log(res);
     return res.data.result;
   },
 

@@ -2,6 +2,11 @@ import { DefaultConfig } from 'src/config/default.config';
 import { Files } from './files';
 import { DateUtils } from 'src/libs/core/utils/date.utils';
 
+export enum EnumUpdateLogType {
+  ORDER = 'ORDER',
+  DISPATCH = 'DISPATCH',
+  STATUS = 'STATUS',
+}
 /**
  * 로그파일처리 유틸
  */
@@ -9,11 +14,73 @@ import { DateUtils } from 'src/libs/core/utils/date.utils';
 export class LogFiles {
   // 로그파일 저장 경로
   file: Files;
-  path: string;
 
   constructor() {
     this.file = new Files();
-    this.path = DefaultConfig.files.log.error.path;
+  }
+
+  // 로그파일 저장용 날짜폴더
+  async getDateFolderError() {
+    return `${DefaultConfig.files.log.error.path}/${DateUtils.nowString(
+      'YYYY/MM/DD',
+    )}`;
+  }
+
+  async getDateFolderUpdate() {
+    return `${DefaultConfig.files.log.update.path}/${DateUtils.nowString(
+      'YYYY/MM/DD',
+    )}`;
+  }
+
+  /**
+   * 에러로그남기기
+   * @param data
+   */
+  async error(data: string) {
+    this.save(
+      await this.getDateFolderError(),
+      await this.getDateFileNameForError(),
+      data,
+    );
+  }
+
+  /**
+   * 업데이트 로그
+   * @param data
+   */
+  async update(
+    before: string,
+    after: string,
+    type: EnumUpdateLogType,
+    orderId: string,
+    userEmail: string,
+  ) {
+    const data = { type: type, id: orderId, userEmail: userEmail };
+    data['before'] = before;
+    data['after'] = after;
+
+    await this.save(
+      await this.getDateFolderUpdate(),
+      await this.getDateFileNameForUpdate(),
+      JSON.stringify(data),
+    );
+  }
+
+  async getDateFileNameForUpdate() {
+    const name = DateUtils.nowString('YYYYMMDD');
+    const fileName: string =
+      await DefaultConfig.files.log.update.getLogFileName(name);
+
+    return fileName;
+  }
+
+  async getDateFileNameForError() {
+    const name = DateUtils.nowString('YYYYMMDD');
+    const fileName: string = await DefaultConfig.files.log.error.getLogFileName(
+      name,
+    );
+
+    return fileName;
   }
 
   /**
@@ -21,19 +88,24 @@ export class LogFiles {
    * @param data
    * @param fileName
    */
-  async save(data: string) {
+  async save(dir: string, fileName: string, data: string) {
     // 에러파일명(연월일)
-    const name = DateUtils.nowString('YYYYMMDD');
-    const fileName: string = await DefaultConfig.files.log.error.getLogFileName(
-      name,
-    );
+    // const name = DateUtils.nowString('YYYYMMDD');
+    // const fileName: string = await DefaultConfig.files.log.error.getLogFileName(
+    //   name,
+    // );
 
     //연월일 폴더
-    const newPath = `${this.path}/${DateUtils.nowString('YYYY/MM/DD')}`;
-
+    // const newPath = await this.getDateFolder();
+    const jsonData = JSON.parse(data);
     //에러 메세지에 일시 추가
     const date = DateUtils.nowString('YYYY/MM/DD hh:mm:ss');
-    await this.file.write(newPath, fileName, `[${date}]${data}\n`);
+
+    const res = {};
+    res['date'] = date;
+    res['data'] = jsonData;
+
+    await this.file.write(dir, fileName, JSON.stringify(res) + '\n');
   }
 
   /**
@@ -41,7 +113,7 @@ export class LogFiles {
    * @param path
    * @returns
    */
-  async getLogFileList() {
-    return await this.file.getFiles(this.path);
+  async getLogFileListErr() {
+    return await this.file.getFiles(DefaultConfig.files.log.error.path);
   }
 }

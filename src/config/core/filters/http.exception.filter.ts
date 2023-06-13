@@ -18,7 +18,7 @@ import { ExceptionCodeList } from '../exceptions/exception.code';
 export class HttpExceptionFilter implements ExceptionFilter {
   constructor(private logger: Logger) {}
 
-  catch(exception: HttpException, host: ArgumentsHost) {
+  async catch(exception: HttpException, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
@@ -51,7 +51,10 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const data = HttpUtils.makeAPIResponse(false, errData);
 
     // 로그파일 작성
-    new LogFiles().save(JSON.stringify(errData));
+    const logFile = new LogFiles();
+    const dir = await logFile.getDateFolderError();
+    const fileName = await logFile.getDateFileNameForError();
+    new LogFiles().save(dir, fileName, JSON.stringify(errData));
 
     // response
     response.status(status).json(data);

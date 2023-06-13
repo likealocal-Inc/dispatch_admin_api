@@ -5,6 +5,9 @@ import { PrismaService } from '../../config/core/prisma/prisma.service';
 import { OrderService } from '../order/order.service';
 import { FindDispatchDto } from './dto/find.dispatch.dto';
 import { OrderEntity } from '../order/entities/order.entity';
+import { DispatchEntity } from './entities/dispatch.entity';
+import { DispatchUtils } from 'src/libs/core/utils/dispatch.utils';
+import { EnumUpdateLogType } from 'src/config/core/files/log.files';
 
 @Injectable()
 export class DispatchService {
@@ -13,7 +16,7 @@ export class DispatchService {
     private readonly orderService: OrderService,
   ) {}
 
-  async create(createDispatchDto: CreateDispatchDto) {
+  async create(createDispatchDto: CreateDispatchDto, userEmail: string) {
     //return await this.prisma.dispatch.create({ data: createDispatchDto });
     let res;
     await this.prisma.$transaction(async (tx) => {
@@ -22,6 +25,7 @@ export class DispatchService {
         await this.orderService.updateStatus(
           createDispatchDto.orderId,
           createDispatchDto.dispatchStatus,
+          userEmail,
           tx,
         );
       }
@@ -83,18 +87,27 @@ export class DispatchService {
     return res;
   }
 
-  async update(id: string, updateDispatchDto: UpdateDispatchDto) {
-    let res;
+  async update(
+    id: string,
+    updateDispatchDto: UpdateDispatchDto,
+    userEmail: string,
+  ) {
+    let res: DispatchEntity;
     await this.prisma.$transaction(async (tx) => {
       // 상태값 변경 값이 들어 오면 업데이트 처리 한다.
       if (updateDispatchDto.dispatchStatus !== '') {
         await this.orderService.updateStatus(
           updateDispatchDto.orderId,
           updateDispatchDto.dispatchStatus,
+          userEmail,
           tx,
         );
       }
-      console.log(updateDispatchDto);
+
+      const before: DispatchEntity = await tx.dispatch.findUnique({
+        where: { id },
+      });
+
       res = await tx.dispatch.update({
         where: { id },
         data: {
@@ -117,6 +130,18 @@ export class DispatchService {
           exceedFare: updateDispatchDto.exceedFare,
         },
       });
+
+      const orderEntity: OrderEntity = await tx.orders.findFirst({
+        where: { id: res.orderId },
+      });
+
+      DispatchUtils.updateLogFile(
+        EnumUpdateLogType.DISPATCH,
+        JSON.stringify(before),
+        JSON.stringify(res),
+        orderEntity.company + '-' + orderEntity.key,
+        userEmail,
+      );
     });
 
     return res;

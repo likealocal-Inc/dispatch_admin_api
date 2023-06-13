@@ -38,6 +38,14 @@ export const DefaultConfig = {
           return `${DefaultConfig.files.log.error.name}_${name}.${DefaultConfig.files.log.error.ext}`;
         },
       },
+      update: {
+        path: './files/update',
+        name: 'UPDATE',
+        ext: 'update',
+        getLogFileName: async (name: string): Promise<string> => {
+          return `${DefaultConfig.files.log.update.name}_${name}.${DefaultConfig.files.log.update.ext}`;
+        },
+      },
     },
   },
   // 인증관련

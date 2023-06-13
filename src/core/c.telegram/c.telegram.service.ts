@@ -4,7 +4,6 @@ import { TelegramUtils } from 'src/config/core/telegram/telegram.utils';
 @Injectable()
 export class CTelegramService {
   async getChatRoomId(botKey: string) {
-    console.log(botKey);
     return await TelegramUtils.getChatRoomId(botKey);
   }
   /**

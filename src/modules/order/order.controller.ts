@@ -16,7 +16,6 @@ import { AUTH_MUST } from 'src/config/core/decorators/api/auth.must/auth.must.de
 import { PagingDto } from 'src/libs/core/dtos/paging';
 import { CustomException } from 'src/config/core/exceptions/custom.exception';
 import { ExceptionCodeList } from 'src/config/core/exceptions/exception.code';
-import { TextSendUtils } from 'src/libs/core/utils/text.send.utils';
 
 @Controller('order')
 export class OrderController {
@@ -32,7 +31,6 @@ export class OrderController {
         await this.orderService.create(createOrderDto, user.id),
       );
     } catch (err) {
-      console.log(err);
       throw new CustomException(ExceptionCodeList.ERROR);
     }
   }
@@ -46,7 +44,6 @@ export class OrderController {
         await this.orderService.listOrderWithUser(pagingDto, req.user),
       );
     } catch (err) {
-      console.log(err);
       throw new CustomException(ExceptionCodeList.ERROR);
     }
   }
@@ -69,11 +66,12 @@ export class OrderController {
   async update(
     @Param('id') id: string,
     @Body() updateOrderDto: UpdateOrderDto,
+    @Req() req: any,
   ) {
     try {
       return HttpUtils.makeAPIResponse(
         true,
-        await this.orderService.update(id, updateOrderDto),
+        await this.orderService.update(id, updateOrderDto, req.user.email),
       );
     } catch {
       throw new CustomException(ExceptionCodeList.ERROR);
@@ -91,11 +89,12 @@ export class OrderController {
   async updateDispatchRequestForIamweb(
     @Param('id') id: string,
     @Param('status') status: string,
+    @Req() req: any,
   ) {
     try {
       return HttpUtils.makeAPIResponse(
         true,
-        await this.orderService.updateStatus(id, status),
+        await this.orderService.updateStatus(id, status, req.user.email),
       );
     } catch {
       throw new CustomException(ExceptionCodeList.ERROR);

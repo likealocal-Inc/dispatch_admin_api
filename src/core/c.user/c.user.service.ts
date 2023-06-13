@@ -53,7 +53,6 @@ export class CUserService {
       if (user.role === Role.ADMIN) {
         where = { role: Role.USER };
       }
-      console.log(where);
       count = await tx.user.count();
       users = await tx.user.findMany({
         where,
@@ -74,7 +73,6 @@ export class CUserService {
 
   // 아이디로 조회
   async findId(id: string): Promise<CUserEntity> {
-    console.log(id);
     const user = await this.prisma.user.findUnique({ where: { id } });
     user.password = '';
     return user;
@@ -129,7 +127,6 @@ export class CUserService {
   }
 
   async updateAcive(id: string, active: boolean): Promise<CUserEntity> {
-    console.log(id, active);
     return await this.prisma.user.update({
       where: { id },
       data: { isActive: active },

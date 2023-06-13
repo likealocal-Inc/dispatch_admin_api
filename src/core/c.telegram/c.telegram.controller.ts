@@ -16,7 +16,6 @@ export class CTelegramController {
 
   @Post('/send')
   async send(@Body() body: string) {
-    console.log(body);
     await this.cTelegramService.send(
       body['botKey'],
       body['roomId'],

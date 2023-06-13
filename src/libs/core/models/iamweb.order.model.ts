@@ -129,7 +129,6 @@ export class NewIamwebOrderModel {
       }
     }
     info += '}';
-    console.log(info);
     this.info = JSON.parse(info);
   }
 }

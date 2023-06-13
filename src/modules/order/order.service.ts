@@ -11,7 +11,8 @@ import { OrderStatus, Role } from '@prisma/client';
 import { DispatchUtils } from 'src/libs/core/utils/dispatch.utils';
 import { TextSendUtils } from 'src/libs/core/utils/text.send.utils';
 import { DateUtils } from 'src/libs/core/utils/date.utils';
-import { DefaultConfig } from 'src/config/default.config';
+import { EnumUpdateLogType } from 'src/config/core/files/log.files';
+import { log } from 'console';
 
 @Injectable()
 export class OrderService {
@@ -116,11 +117,22 @@ export class OrderService {
     return await this.prisma.orders.findFirst({ where: { id } });
   }
 
-  async update(id: string, updateOrderDto: UpdateOrderDto) {
+  async update(id: string, updateOrderDto: UpdateOrderDto, userEmail: string) {
+    const before = await this.prisma.orders.findUnique({ where: { id } });
     const order: OrderEntity = await this.prisma.orders.update({
       where: { id: id },
       data: { ...updateOrderDto, status: OrderStatus.DISPATCH_MODIFIED },
     });
+
+    const dto: UpdateOrderDto = new UpdateOrderDto();
+
+    DispatchUtils.updateLogFile(
+      EnumUpdateLogType.ORDER,
+      JSON.stringify(dto.convertFromEntity(before)),
+      JSON.stringify(dto.convertFromEntity(order)),
+      order.company + '-' + order.key,
+      userEmail,
+    );
 
     // 수정 알림 보내기
     DispatchUtils.updateDispatchRequestStatus(order);
@@ -129,15 +141,24 @@ export class OrderService {
 
   /**
    * 상태값 변경
-   * @param id
+   * @param orderId
    * @param status
    * @param tx
    * @returns
    */
-  async updateStatus(id: string, status: any, tx = null) {
+  async updateStatus(
+    orderId: string,
+    status: any,
+    userEmail: string,
+    tx = null,
+  ) {
     let order: OrderEntity;
 
-    const orderTemp = await this.prisma.orders.findUnique({ where: { id } });
+    // 상태값변경 시간을 저장하기 위해서 해당 주문을 조회
+    // else02에 json데이터로 저장한다.
+    const orderTemp = await this.prisma.orders.findUnique({
+      where: { id: orderId },
+    });
     let moreInfo = orderTemp.else02;
     if (status === OrderStatus.DISPATCH_REQUEST_CANCEL) {
       const moreInfoJson = JSON.parse(moreInfo === '' ? '{}' : moreInfo);
@@ -148,15 +169,25 @@ export class OrderService {
 
     if (tx === null) {
       order = await this.prisma.orders.update({
-        where: { id },
+        where: { id: orderId },
         data: { status: status, else02: moreInfo },
       });
     } else {
       order = await tx.orders.update({
-        where: { id },
+        where: { id: orderId },
         data: { status: status, else02: moreInfo },
       });
     }
+
+    // 업데이트 로그파일
+    DispatchUtils.updateLogFile(
+      EnumUpdateLogType.STATUS,
+      status,
+      orderTemp.status,
+      order.company + '-' + order.key,
+      userEmail,
+    );
+
     DispatchUtils.processStatus(order);
   }
 

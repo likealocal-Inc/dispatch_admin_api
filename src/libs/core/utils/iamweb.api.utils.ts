@@ -4,6 +4,7 @@ import { Observable, catchError, firstValueFrom } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
 import { ErrorLogUtils } from './error.log.utils';
 import { DefaultConfig } from 'src/config/default.config';
+import { LogFiles } from 'src/config/core/files/log.files';
 
 /**
  * 아임웹 API 호출 응답 코드
@@ -50,7 +51,8 @@ export class IamwebApiUtils {
    * @param data
    */
   async __writeErrorLog(data: any) {
-    await new ErrorLogUtils().write(data);
+    await new LogFiles().error(data);
+    // await new ErrorLogUtils().write(data);
     // const fileUtils = new FileUtil();
     // const time = new DateUtil().nowString('YYYY/MM/DD hh:mm:ss');
     // const path = new DateUtil().nowString('YYYY_MM_DD');
@@ -73,7 +75,7 @@ export class IamwebApiUtils {
       return data;
     }
     const desc = await DefaultConfig.iamwebApi.responseCodeCheck(code);
-    this.__writeErrorLog(`Iamweb api error: ${desc}`);
+    this.__writeErrorLog(`{"Iamweb api error": "${desc}"}`);
 
     return data;
   }

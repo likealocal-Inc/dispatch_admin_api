@@ -15,7 +15,7 @@ export class DispatchController {
     createDispatchDto.userId = req.user.id;
     return HttpUtils.makeAPIResponse(
       true,
-      await this.dispatchService.create(createDispatchDto),
+      await this.dispatchService.create(createDispatchDto, req.user.email),
     );
   }
 
@@ -44,10 +44,11 @@ export class DispatchController {
   async update(
     @Param('id') id: string,
     @Body() updateDispatchDto: UpdateDispatchDto,
+    @Req() req: any,
   ) {
     return HttpUtils.makeAPIResponse(
       true,
-      await this.dispatchService.update(id, updateDispatchDto),
+      await this.dispatchService.update(id, updateDispatchDto, req.user.email),
     );
   }
 }

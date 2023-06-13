@@ -69,7 +69,6 @@ export class CRedisService {
    * @returns
    */
   async isKey(key: string): Promise<boolean> {
-    console.log(this.redis.get(key));
     const res = await this.redis.get(key);
     return res == null ? false : true;
   }

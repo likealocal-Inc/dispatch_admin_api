@@ -142,7 +142,6 @@ export class CAuthService {
     try {
       token = await this.jwtService.signAsync(payload);
     } catch (err) {
-      console.log(err);
       throw new CustomException(ExceptionCodeList.AUTH.TOKEN_FAIL);
     }
     const resToken = await this.prisma.token.findUnique({

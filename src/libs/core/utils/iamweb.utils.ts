@@ -69,12 +69,10 @@ export class IamwebUtils {
       await this.apiUtils.makeHeadersAndParams({ 'access-token': accessToken }),
     );
 
-    console.log(res);
     if (res === undefined || res.data == undefined) return;
 
     const item = res.data[0];
 
-    console.log(item.items);
     iamwebOrderModel.status = item.status;
     iamwebOrderModel.pay_time = item.pay_time;
     iamwebOrderModel.order_title = item.items[0].prod_name;
@@ -83,7 +81,6 @@ export class IamwebUtils {
       return iamwebOrderModel;
     }
     const options = item.items[0].options[0][0];
-    console.log(options);
     // 옵션값 구조
     /**
      "option_name_list": [
@@ -189,7 +186,6 @@ export class IamwebUtils {
       });
       if (timezon.length > 0) {
         iamwebOrderModel.timezon = options.value_name_list[index];
-        console.log(iamwebOrderModel.timezon);
       }
     }
 

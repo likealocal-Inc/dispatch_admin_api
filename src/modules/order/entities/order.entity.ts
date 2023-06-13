@@ -1,6 +1,6 @@
-import { OrderStatus, Orders } from '@prisma/client';
+import { OrderStatus } from '@prisma/client';
 
-export class OrderEntity implements Orders {
+export class OrderEntity {
   id: string;
   created: Date;
   updated: Date;
