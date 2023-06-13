@@ -74,7 +74,7 @@ export const DefaultConfig = {
       pickup: 83,
       sanding: 122,
     },
-    orderSearchDays: 30, // 주문 데이터 조회 날 기준 0:당일
+    orderSearchDays: 5, // 주문 데이터 조회 날 기준 0:당일
     responseCodeList: [
       { CODE: -1, DESC: '잘못된 API 키 또는 시크릿' },
       { CODE: -2, DESC: '잘못된 액세스 토큰으로 접근' },
@@ -237,7 +237,14 @@ export const DefaultConfig = {
     iamwebOrderUserCompany: 'likealocal',
   },
   telegram: {
-    botKey: '6018333651:AAHcYRghyBYDo9BpY9Wd5xvrHXguwHxcbI4',
-    chatRoomId: 847828318,
+    jin: {
+      botKey: '6131032930:AAEjQc4k6krqLlLCcDqmqaJmt_tbky9XY8E',
+      chatRoomId: -716448733,
+    },
+  },
+  textMessage: {
+    getUrl: (receiver, msg) => {
+      return `https://apis.aligo.in/send/?key=72bsh9eyy1mtat2askdj30czfgjw2jnl&user_id=jinmobility&sender=16887722&receiver=${receiver}&msg=${msg}`;
+    },
   },
 };

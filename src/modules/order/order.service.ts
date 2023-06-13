@@ -7,7 +7,11 @@ import { CUserService } from 'src/core/c.user/c.user.service';
 import { OrderEntity } from './entities/order.entity';
 import { CUserEntity } from 'src/core/c.user/entities/c.user.entity';
 import { ListOrderDto } from './dto/list.order.dto';
-import { Company, Role } from '@prisma/client';
+import { OrderStatus, Role } from '@prisma/client';
+import { DispatchUtils } from 'src/libs/core/utils/dispatch.utils';
+import { TextSendUtils } from 'src/libs/core/utils/text.send.utils';
+import { DateUtils } from 'src/libs/core/utils/date.utils';
+import { DefaultConfig } from 'src/config/default.config';
 
 @Injectable()
 export class OrderService {
@@ -19,7 +23,7 @@ export class OrderService {
   async create(createOrderDto: CreateOrderDto, userId: string) {
     const user = await this.userService.findId(userId);
 
-    return this.prisma.orders.create({
+    const order: OrderEntity = await this.prisma.orders.create({
       data: {
         ...createOrderDto,
         userId,
@@ -27,12 +31,17 @@ export class OrderService {
         startAirport: '',
         isIamweb: false,
         iamwebOrderNo: '',
+        status: OrderStatus.DISPATCH_REQUEST,
         else01: '',
         else02: '',
         company: user.company,
         orderTime: '' + Date.now().toString().substring(0, 10),
       },
     });
+
+    DispatchUtils.processStatus(order);
+
+    return order;
   }
 
   /**
@@ -108,28 +117,65 @@ export class OrderService {
   }
 
   async update(id: string, updateOrderDto: UpdateOrderDto) {
-    return this.prisma.orders.update({
+    const order: OrderEntity = await this.prisma.orders.update({
       where: { id: id },
-      data: updateOrderDto,
+      data: { ...updateOrderDto, status: OrderStatus.DISPATCH_MODIFIED },
     });
+
+    // 수정 알림 보내기
+    DispatchUtils.updateDispatchRequestStatus(order);
+    return order;
   }
 
   /**
-   * 아임웹주문에서 배차요청하기
+   * 상태값 변경
    * @param id
+   * @param status
+   * @param tx
    * @returns
    */
   async updateStatus(id: string, status: any, tx = null) {
+    let order: OrderEntity;
+
+    const orderTemp = await this.prisma.orders.findUnique({ where: { id } });
+    let moreInfo = orderTemp.else02;
+    if (status === OrderStatus.DISPATCH_REQUEST_CANCEL) {
+      const moreInfoJson = JSON.parse(moreInfo === '' ? '{}' : moreInfo);
+      moreInfoJson['dispatch_cancel_time'] =
+        DateUtils.nowString('YYYY/MM/DD hh:mm');
+      moreInfo = JSON.stringify(moreInfoJson);
+    }
+
     if (tx === null) {
-      return await this.prisma.orders.update({
+      order = await this.prisma.orders.update({
         where: { id },
-        data: { status: status },
+        data: { status: status, else02: moreInfo },
       });
     } else {
-      return await tx.orders.update({
+      order = await tx.orders.update({
         where: { id },
-        data: { status: status },
+        data: { status: status, else02: moreInfo },
       });
     }
+    DispatchUtils.processStatus(order);
+  }
+
+  /**
+   * 문자전송
+   * @param phones
+   * @param txt
+   * @param orderId
+   * @param isJini
+   * @returns
+   */
+  async sendTxt(phones: string, txt: string, orderId: string, isJini: boolean) {
+    // 지니에게 보내는것일 경우 order에 세팅
+    if (isJini) {
+      await this.prisma.orders.update({
+        where: { id: orderId },
+        data: { isJiniSendTxt: true },
+      });
+    }
+    return await TextSendUtils.send(phones, txt);
   }
 }

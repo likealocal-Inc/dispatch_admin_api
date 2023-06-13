@@ -3,6 +3,8 @@ import { CreateDispatchDto } from './dto/create.dispatch.dto';
 import { UpdateDispatchDto } from './dto/update.dispatch.dto';
 import { PrismaService } from '../../config/core/prisma/prisma.service';
 import { OrderService } from '../order/order.service';
+import { FindDispatchDto } from './dto/find.dispatch.dto';
+import { OrderEntity } from '../order/entities/order.entity';
 
 @Injectable()
 export class DispatchService {
@@ -56,6 +58,29 @@ export class DispatchService {
 
   async findOneByOrderId(orderId: string) {
     return await this.prisma.dispatch.findFirst({ where: { orderId } });
+  }
+
+  async dispatchWithUserInfo(orderId: string) {
+    let res: FindDispatchDto;
+
+    const dispatch: FindDispatchDto = await this.prisma.dispatch.findFirst({
+      where: { orderId },
+    });
+    if (dispatch === null) {
+      res = new FindDispatchDto();
+      res.noData = true;
+    } else {
+      res = dispatch;
+      res.noData = false;
+    }
+    const order: OrderEntity = await this.prisma.orders.findUnique({
+      where: { id: orderId },
+    });
+    const user = await this.prisma.user.findFirst({
+      where: { id: order.userId },
+    });
+    res.userPhone = user.phone;
+    return res;
   }
 
   async update(id: string, updateDispatchDto: UpdateDispatchDto) {

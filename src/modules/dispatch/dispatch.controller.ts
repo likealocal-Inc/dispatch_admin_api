@@ -36,7 +36,7 @@ export class DispatchController {
   async findOneByOrderId(@Param('id') id: string) {
     return HttpUtils.makeAPIResponse(
       true,
-      await this.dispatchService.findOneByOrderId(id),
+      await this.dispatchService.dispatchWithUserInfo(id),
     );
   }
 
@@ -50,9 +50,4 @@ export class DispatchController {
       await this.dispatchService.update(id, updateDispatchDto),
     );
   }
-
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.dispatchService.remove(+id);
-  // }
 }

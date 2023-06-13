@@ -9,9 +9,7 @@ import {
   UploadedFile,
   ParseFilePipeBuilder,
   HttpStatus,
-  ParseIntPipe,
   StreamableFile,
-  HttpException,
 } from '@nestjs/common';
 import { createReadStream } from 'fs';
 import { ApiCreatedResponse, ApiTags } from '@nestjs/swagger';

@@ -25,4 +25,5 @@ export class OrderEntity implements Orders {
   key: number;
   customName: string;
   customPhone: string;
+  isJiniSendTxt: boolean;
 }

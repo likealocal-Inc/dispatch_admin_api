@@ -1,18 +1,17 @@
 import { Injectable } from '@nestjs/common';
-import { Telegram } from '../../config/core/telegram/telegram';
+import { TelegramUtils } from 'src/config/core/telegram/telegram.utils';
 
 @Injectable()
 export class CTelegramService {
-  constructor(private readonly telegram: Telegram) {}
-
-  async getChatRoomId() {
-    return await this.telegram.getChatRoomId();
+  async getChatRoomId(botKey: string) {
+    console.log(botKey);
+    return await TelegramUtils.getChatRoomId(botKey);
   }
   /**
    * 메세지 전송
    * @param message
    */
-  async send(message: string) {
-    this.telegram.send(message);
+  async send(botKey: string, roomId: string, message: string) {
+    return await TelegramUtils.send(botKey, +roomId, message);
   }
 }

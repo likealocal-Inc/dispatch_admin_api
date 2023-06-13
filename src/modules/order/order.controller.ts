@@ -16,6 +16,7 @@ import { AUTH_MUST } from 'src/config/core/decorators/api/auth.must/auth.must.de
 import { PagingDto } from 'src/libs/core/dtos/paging';
 import { CustomException } from 'src/config/core/exceptions/custom.exception';
 import { ExceptionCodeList } from 'src/config/core/exceptions/exception.code';
+import { TextSendUtils } from 'src/libs/core/utils/text.send.utils';
 
 @Controller('order')
 export class OrderController {
@@ -25,7 +26,6 @@ export class OrderController {
   @Post()
   async create(@Body() createOrderDto: CreateOrderDto, @Req() req: any) {
     const user = req.user;
-    console.log(createOrderDto);
     try {
       return HttpUtils.makeAPIResponse(
         true,
@@ -81,8 +81,9 @@ export class OrderController {
   }
 
   /**
-   * 아임웹 주문 요청
+   * 상태값변경
    * @param id
+   * @param status
    * @returns
    */
   @AUTH_MUST()
@@ -99,5 +100,18 @@ export class OrderController {
     } catch {
       throw new CustomException(ExceptionCodeList.ERROR);
     }
+  }
+
+  @Post('/send.txt')
+  async sendTxt(@Body() body: string) {
+    return HttpUtils.makeAPIResponse(
+      true,
+      await this.orderService.sendTxt(
+        body['phones'],
+        body['txt'],
+        body['orderId'],
+        body['isJini'],
+      ),
+    );
   }
 }

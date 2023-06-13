@@ -28,6 +28,7 @@ export class ListOrderDto implements Orders {
   key: number;
   customName: string;
   customPhone: string;
+  isJiniSendTxt: boolean;
 
   constructor(orderEntidy: OrderEntity) {
     this.id = orderEntidy.id;
@@ -54,5 +55,6 @@ export class ListOrderDto implements Orders {
     this.key = orderEntidy.key;
     this.customName = orderEntidy.customName;
     this.customPhone = orderEntidy.customPhone;
+    this.isJiniSendTxt = orderEntidy.isJiniSendTxt;
   }
 }
