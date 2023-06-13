@@ -14,6 +14,7 @@ export const TextSendUtils = {
   send: async (phones: string, message: string) => {
     const res = await axios.post(
       DefaultConfig.textMessage.getUrl(phones, message),
+      { headers: { 'Content-Type': 'multipart/form-data' } },
     );
     return res.data;
   },

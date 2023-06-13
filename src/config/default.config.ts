@@ -1,3 +1,4 @@
+import { ConfigModule } from '@nestjs/config';
 import { DateUtils } from 'src/libs/core/utils/date.utils';
 
 /**
@@ -251,8 +252,11 @@ export const DefaultConfig = {
     },
   },
   textMessage: {
-    getUrl: (receiver, msg) => {
-      return `https://apis.aligo.in/send/?key=72bsh9eyy1mtat2askdj30czfgjw2jnl&user_id=jinmobility&sender=16887722&receiver=${receiver}&msg=${msg}`;
+    getUrl: (receiver: string, msg: string) => {
+      const url = `https://apis.aligo.in/send/?key=72bsh9eyy1mtat2askdj30czfgjw2jnl&user_id=jinmobility&sender=16887722&receiver=${receiver}&msg=${encodeURIComponent(
+        msg,
+      )}`;
+      return url;
     },
   },
 };
