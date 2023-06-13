@@ -8,6 +8,8 @@ import { NewIamwebOrderModel } from 'src/libs/core/models/iamweb.order.model';
 import { IamwebUtils } from 'src/libs/core/utils/iamweb.utils';
 import { CustomException } from '../../config/core/exceptions/custom.exception';
 import { ExceptionCodeList } from 'src/config/core/exceptions/exception.code';
+import { SendDispatchTelegramUtils } from 'src/libs/core/utils/send.dispatch.message';
+import { OrderEntity } from './entities/order.entity';
 
 @Injectable()
 export class IamwebOrderBatch {
@@ -36,7 +38,7 @@ export class IamwebOrderBatch {
 
       for (let index = 0; index < res.length; index++) {
         const d = res[index];
-        await this.prisma.orders.create({
+        const order: OrderEntity = await this.prisma.orders.create({
           data: {
             status: OrderStatus.IAMWEB_ORDER,
             isIamweb: true,
@@ -70,6 +72,11 @@ export class IamwebOrderBatch {
             customPhone: '',
           },
         });
+
+        // 텔레그램 알림 전송
+        await SendDispatchTelegramUtils.sendIamweb(
+          `아임웹주문번호: ${d.order_no}/ 배차어드민ID:${order.company}-${order.key} 주문이 접수되었습니다.`,
+        );
       }
     } catch {
       throw new CustomException(

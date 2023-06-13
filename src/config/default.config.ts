@@ -250,6 +250,10 @@ export const DefaultConfig = {
       botKey: '6131032930:AAEjQc4k6krqLlLCcDqmqaJmt_tbky9XY8E',
       chatRoomId: -716448733,
     },
+    iamweb: {
+      botKey: '6018333651:AAHcYRghyBYDo9BpY9Wd5xvrHXguwHxcbI4',
+      chatRoomId: 847828318,
+    },
   },
   textMessage: {
     getUrl: (receiver: string, msg: string) => {

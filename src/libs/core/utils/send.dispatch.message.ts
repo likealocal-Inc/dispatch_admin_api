@@ -3,6 +3,17 @@ import { DefaultConfig } from 'src/config/default.config';
 import { TextSendUtils } from './text.send.utils';
 
 export const SendDispatchTelegramUtils = {
+  sendIamweb: async (message: string) => {
+    await TelegramUtils.send(
+      DefaultConfig.telegram.iamweb.botKey,
+      DefaultConfig.telegram.iamweb.chatRoomId,
+      message,
+    );
+  },
+  newIamweb: async (message: string) => {
+    await SendDispatchTelegramUtils.sendIamweb(`${message}이 접수 되었습니다.`);
+  },
+
   sendJin: async (message: string) => {
     await TelegramUtils.send(
       DefaultConfig.telegram.jin.botKey,
@@ -12,20 +23,20 @@ export const SendDispatchTelegramUtils = {
   },
   // 배차요청
   dispatchRequest: async (company, orderId) => {
-    SendDispatchTelegramUtils.sendJin(
-      `${company}/${orderId}건이 접수 되었습니다.`,
+    await SendDispatchTelegramUtils.sendJin(
+      `${company}/${orderId} 배차요청이 접수 되었습니다.`,
     );
   },
   // 배차요청 정보 변경
   dispatchRequestInfoChange: async (company, orderId) => {
-    SendDispatchTelegramUtils.sendJin(
-      `${company}/${orderId}건이 변경 되었습니다.`,
+    await SendDispatchTelegramUtils.sendJin(
+      `${company}/${orderId} 배차요청이 변경 되었습니다.`,
     );
   },
   // 배차요청 취소
   dispatchRequestCancel: async (company, orderId) => {
-    SendDispatchTelegramUtils.sendJin(
-      `${company}/${orderId}건이 취소 되었습니다.`,
+    await SendDispatchTelegramUtils.sendJin(
+      `${company}/${orderId} 배차요청이 취소 되었습니다.`,
     );
   },
 };
