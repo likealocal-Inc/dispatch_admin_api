@@ -66,6 +66,16 @@ export class LogFiles {
     );
   }
 
+  async getUpdateFiles({ year, month, day }: any): Promise<string[]> {
+    const dir = `${DefaultConfig.files.log.update.path}/${year}/${month}/${day}`;
+    const files = await this.file.getFiles(dir);
+    return files;
+  }
+
+  async readUpdateFile(path: string) {
+    return await this.file.read(path);
+  }
+
   async getDateFileNameForUpdate() {
     const name = DateUtils.nowString('YYYYMMDD');
     const fileName: string =
@@ -97,6 +107,7 @@ export class LogFiles {
 
     //연월일 폴더
     // const newPath = await this.getDateFolder();
+    console.log(data);
     const jsonData = JSON.parse(data);
     //에러 메세지에 일시 추가
     const date = DateUtils.nowString('YYYY/MM/DD hh:mm:ss');
@@ -105,7 +116,7 @@ export class LogFiles {
     res['date'] = date;
     res['data'] = jsonData;
 
-    await this.file.write(dir, fileName, JSON.stringify(res) + '\n');
+    await this.file.write(dir, fileName, JSON.stringify(res) + ',\n');
   }
 
   /**

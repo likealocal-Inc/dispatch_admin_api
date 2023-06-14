@@ -33,11 +33,12 @@ import { CompanyModule } from './modules/company/company.module';
 import { OrderModule } from './modules/order/order.module';
 import { DispatchModule } from './modules/dispatch/dispatch.module';
 import { SetModule } from './modules/set/set.module';
+import { LogModule } from './modules/log/log.module';
 
 @Module({
   imports: [
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'static'),
+      rootPath: join(__dirname, '..', 'public'),
       exclude: ['/api*', '/docs*'],
     }),
     ConfigModule.forRoot({
@@ -68,6 +69,8 @@ import { SetModule } from './modules/set/set.module';
     DispatchModule,
 
     SetModule,
+
+    LogModule,
   ],
   controllers: [],
   providers: [

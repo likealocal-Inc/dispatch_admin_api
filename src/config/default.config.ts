@@ -1,5 +1,6 @@
 import { ConfigModule } from '@nestjs/config';
 import { DateUtils } from 'src/libs/core/utils/date.utils';
+import { StringUtils } from 'src/libs/core/utils/string.utils';
 
 /**
  * 시스테 기본 설정 값
@@ -36,7 +37,11 @@ export const DefaultConfig = {
         name: 'ERROR',
         ext: 'err',
         getLogFileName: async (name: string): Promise<string> => {
-          return `${DefaultConfig.files.log.error.name}_${name}.${DefaultConfig.files.log.error.ext}`;
+          return `${
+            DefaultConfig.files.log.error.name
+          }_${StringUtils.getRandomString(5)}_${name}.${
+            DefaultConfig.files.log.error.ext
+          }`;
         },
       },
       update: {
@@ -44,7 +49,11 @@ export const DefaultConfig = {
         name: 'UPDATE',
         ext: 'update',
         getLogFileName: async (name: string): Promise<string> => {
-          return `${DefaultConfig.files.log.update.name}_${name}.${DefaultConfig.files.log.update.ext}`;
+          return `${
+            DefaultConfig.files.log.update.name
+          }_${StringUtils.getRandomString(5)}_${name}.${
+            DefaultConfig.files.log.update.ext
+          }`;
         },
       },
     },

@@ -39,6 +39,20 @@ export class Files {
       return;
     }
     const files = this.fs.readdirSync(path);
-    return files;
+    const res: string[] = [];
+    for (let index = 0; index < files.length; index++) {
+      res.push(path + '/' + files[index]);
+    }
+    return res;
+  }
+
+  /**
+   * 파일 내용 읽기
+   * @param path
+   * @returns
+   */
+  async read(path: string) {
+    const res = this.fs.readFileSync(path);
+    return res.toString('utf-8');
   }
 }
