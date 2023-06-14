@@ -1,6 +1,8 @@
 import { DefaultConfig } from 'src/config/default.config';
 import { Files } from './files';
 import { DateUtils } from 'src/libs/core/utils/date.utils';
+import { CustomException } from '../exceptions/custom.exception';
+import { ExceptionCodeList } from '../exceptions/exception.code';
 
 export enum EnumUpdateLogType {
   ORDER = 'ORDER',
@@ -108,15 +110,19 @@ export class LogFiles {
     //연월일 폴더
     // const newPath = await this.getDateFolder();
     console.log(data);
-    const jsonData = JSON.parse(data);
-    //에러 메세지에 일시 추가
-    const date = DateUtils.nowString('YYYY/MM/DD hh:mm:ss');
+    try {
+      const jsonData = JSON.parse(data);
+      //에러 메세지에 일시 추가
+      const date = DateUtils.nowString('YYYY/MM/DD hh:mm:ss');
 
-    const res = {};
-    res['date'] = date;
-    res['data'] = jsonData;
+      const res = {};
+      res['date'] = date;
+      res['data'] = jsonData;
 
-    await this.file.write(dir, fileName, JSON.stringify(res) + ',\n');
+      await this.file.write(dir, fileName, JSON.stringify(res) + ',\n');
+    } catch (err) {
+      throw new CustomException(ExceptionCodeList.ERROR, err);
+    }
   }
 
   /**
