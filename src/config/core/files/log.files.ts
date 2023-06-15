@@ -120,9 +120,7 @@ export class LogFiles {
       res['data'] = jsonData;
 
       await this.file.write(dir, fileName, JSON.stringify(res) + ',\n');
-    } catch (err) {
-      throw new CustomException(ExceptionCodeList.ERROR, err);
-    }
+    } catch (err) {}
   }
 
   /**

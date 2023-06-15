@@ -119,20 +119,36 @@ export class OrderService {
 
   async update(id: string, updateOrderDto: UpdateOrderDto, userEmail: string) {
     const before = await this.prisma.orders.findUnique({ where: { id } });
-    const order: OrderEntity = await this.prisma.orders.update({
+    let order: OrderEntity = await this.prisma.orders.update({
       where: { id: id },
       data: { ...updateOrderDto, status: OrderStatus.DISPATCH_MODIFIED },
     });
 
-    const dto: UpdateOrderDto = new UpdateOrderDto();
+    const dtoBefore: UpdateOrderDto = new UpdateOrderDto();
+    const dtoAfter: UpdateOrderDto = new UpdateOrderDto();
 
+    const beforeJson = dtoBefore.convertFromEntity(before);
+    const afterJson = dtoAfter.convertFromEntity(order);
     DispatchUtils.updateLogFile(
       EnumUpdateLogType.ORDER,
-      JSON.stringify(dto.convertFromEntity(before)),
-      JSON.stringify(dto.convertFromEntity(order)),
+      JSON.stringify(beforeJson),
+      JSON.stringify(afterJson),
       order.company + '-' + order.key,
       userEmail,
     );
+
+    // 변경된 데이터 찾아서 JSON 형태로 반환
+    const changeDataJson = await DispatchUtils.compareOrderData(before, order);
+    // 변겯된 데이터를 JSON데이터로 추가
+    const changeData = await DispatchUtils.addDataToJsonType(
+      order.else02,
+      'update',
+      JSON.stringify(changeDataJson),
+    );
+    order = await this.prisma.orders.update({
+      where: { id: order.id },
+      data: { else02: JSON.stringify(changeData) },
+    });
 
     // 수정 알림 보내기
     DispatchUtils.updateDispatchRequestStatus(order);
@@ -161,10 +177,13 @@ export class OrderService {
     });
     let moreInfo = orderTemp.else02;
     if (status === OrderStatus.DISPATCH_REQUEST_CANCEL) {
-      const moreInfoJson = JSON.parse(moreInfo === '' ? '{}' : moreInfo);
-      moreInfoJson['dispatch_cancel_time'] =
-        DateUtils.nowString('YYYY/MM/DD hh:mm');
-      moreInfo = JSON.stringify(moreInfoJson);
+      moreInfo = JSON.stringify(
+        await DispatchUtils.addDataToJsonType(
+          moreInfo,
+          'dispatch_cancel_time',
+          DateUtils.nowString('YYYY/MM/DD hh:mm'),
+        ),
+      );
     }
 
     if (tx === null) {
