@@ -256,12 +256,12 @@ export const DefaultConfig = {
   },
   telegram: {
     jin: {
-      botKey: '6131032930:AAEjQc4k6krqLlLCcDqmqaJmt_tbky9XY8E',
-      chatRoomId: -716448733,
+      botKey: process.env.TELEGRAM_IAMWEB_KEY, //'6131032930:AAEjQc4k6krqLlLCcDqmqaJmt_tbky9XY8E',
+      chatRoomId: +process.env.TELEGRAM_IAMWEB_CHAT_ID, //-716448733,
     },
     iamweb: {
-      botKey: '6018333651:AAHcYRghyBYDo9BpY9Wd5xvrHXguwHxcbI4',
-      chatRoomId: 847828318,
+      botKey: process.env.TELEGRAM_IAMWEB_KEY, //'6018333651:AAHcYRghyBYDo9BpY9Wd5xvrHXguwHxcbI4',
+      chatRoomId: +process.env.TELEGRAM_IAMWEB_CHAT_ID, //-1001911929668,
     },
   },
   textMessage: {
