@@ -256,8 +256,8 @@ export const DefaultConfig = {
   },
   telegram: {
     jin: {
-      botKey: process.env.TELEGRAM_IAMWEB_KEY, //'6131032930:AAEjQc4k6krqLlLCcDqmqaJmt_tbky9XY8E',
-      chatRoomId: +process.env.TELEGRAM_IAMWEB_CHAT_ID, //-716448733,
+      botKey: process.env.TELEGRAM_JIN_KEY, //'6131032930:AAEjQc4k6krqLlLCcDqmqaJmt_tbky9XY8E',
+      chatRoomId: +process.env.TELEGRAM_JIN_CHAT_ID, //-716448733,
     },
     iamweb: {
       botKey: process.env.TELEGRAM_IAMWEB_KEY, //'6018333651:AAHcYRghyBYDo9BpY9Wd5xvrHXguwHxcbI4',
