@@ -12,7 +12,6 @@ import { DispatchUtils } from 'src/libs/core/utils/dispatch.utils';
 import { TextSendUtils } from 'src/libs/core/utils/text.send.utils';
 import { DateUtils } from 'src/libs/core/utils/date.utils';
 import { EnumUpdateLogType } from 'src/config/core/files/log.files';
-import { log } from 'console';
 
 @Injectable()
 export class OrderService {
@@ -119,39 +118,53 @@ export class OrderService {
 
   async update(id: string, updateOrderDto: UpdateOrderDto, userEmail: string) {
     const before = await this.prisma.orders.findUnique({ where: { id } });
-    let order: OrderEntity = await this.prisma.orders.update({
-      where: { id: id },
-      data: { ...updateOrderDto, status: OrderStatus.DISPATCH_MODIFIED },
-    });
+    let order: OrderEntity;
 
-    const dtoBefore: UpdateOrderDto = new UpdateOrderDto();
-    const dtoAfter: UpdateOrderDto = new UpdateOrderDto();
+    // 아임웹 주문상태에서 업데이트 경우는 상태값 변경을 하지 않는다.
+    if (before.status === OrderStatus.IAMWEB_ORDER) {
+      order = await this.prisma.orders.update({
+        where: { id: id },
+        data: updateOrderDto,
+      });
+    } else {
+      order = await this.prisma.orders.update({
+        where: { id: id },
+        data: { ...updateOrderDto, status: OrderStatus.DISPATCH_MODIFIED },
+      });
 
-    const beforeJson = dtoBefore.convertFromEntity(before);
-    const afterJson = dtoAfter.convertFromEntity(order);
-    DispatchUtils.updateLogFile(
-      EnumUpdateLogType.ORDER,
-      JSON.stringify(beforeJson),
-      JSON.stringify(afterJson),
-      order.company + '-' + order.key,
-      userEmail,
-    );
+      const dtoBefore: UpdateOrderDto = new UpdateOrderDto();
+      const dtoAfter: UpdateOrderDto = new UpdateOrderDto();
 
-    // 변경된 데이터 찾아서 JSON 형태로 반환
-    const changeDataJson = await DispatchUtils.compareOrderData(before, order);
-    // 변겯된 데이터를 JSON데이터로 추가
-    const changeData = await DispatchUtils.addDataToJsonType(
-      order.else02,
-      'update',
-      JSON.stringify(changeDataJson),
-    );
-    order = await this.prisma.orders.update({
-      where: { id: order.id },
-      data: { else02: JSON.stringify(changeData) },
-    });
+      const beforeJson = dtoBefore.convertFromEntity(before);
+      const afterJson = dtoAfter.convertFromEntity(order);
+      DispatchUtils.updateLogFile(
+        EnumUpdateLogType.ORDER,
+        JSON.stringify(beforeJson),
+        JSON.stringify(afterJson),
+        order.company + '-' + order.key,
+        userEmail,
+      );
 
-    // 수정 알림 보내기
-    DispatchUtils.updateDispatchRequestStatus(order);
+      // 변경된 데이터 찾아서 JSON 형태로 반환
+      const changeDataJson = await DispatchUtils.compareOrderData(
+        before,
+        order,
+      );
+      // 변겯된 데이터를 JSON데이터로 추가
+      const changeData = await DispatchUtils.addDataToJsonType(
+        order.else02,
+        'update',
+        JSON.stringify(changeDataJson),
+      );
+      order = await this.prisma.orders.update({
+        where: { id: order.id },
+        data: { else02: JSON.stringify(changeData) },
+      });
+
+      // 수정 알림 보내기
+      DispatchUtils.updateDispatchRequestStatus(order);
+    }
+
     return order;
   }
 
