@@ -29,4 +29,38 @@ export class UpdateOrderDto {
 
     return this;
   }
+  isSame(otherEntity: UpdateOrderDto): boolean {
+    if (this.orderTitle !== otherEntity.orderTitle) {
+      return false;
+    }
+    if (this.boardingDate !== otherEntity.boardingDate) {
+      return false;
+    }
+    if (this.startLocation !== otherEntity.startLocation) {
+      return false;
+    }
+    if (this.startAddress !== otherEntity.startAddress) {
+      return false;
+    }
+    if (this.goalLocation !== otherEntity.goalLocation) {
+      return false;
+    }
+    if (this.goalAddress !== otherEntity.goalAddress) {
+      return false;
+    }
+    if (this.information !== otherEntity.information) {
+      return false;
+    }
+    if (this.else01 !== otherEntity.else01) {
+      return false;
+    }
+    if (this.customName !== otherEntity.customName) {
+      return false;
+    }
+    if (this.customPhone !== otherEntity.customPhone) {
+      return false;
+    }
+
+    return true;
+  }
 }
