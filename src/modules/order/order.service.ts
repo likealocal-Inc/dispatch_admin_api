@@ -12,6 +12,9 @@ import { DispatchUtils } from 'src/libs/core/utils/dispatch.utils';
 import { TextSendUtils } from 'src/libs/core/utils/text.send.utils';
 import { DateUtils } from 'src/libs/core/utils/date.utils';
 import { EnumUpdateLogType } from 'src/config/core/files/log.files';
+import { CreateFromOutOrderDto } from './dto/create.from.out.order.dto';
+import { DefaultConfig } from 'src/config/default.config';
+import { SendDispatchTelegramUtils } from 'src/libs/core/utils/send.dispatch.message';
 
 @Injectable()
 export class OrderService {
@@ -19,6 +22,51 @@ export class OrderService {
     private readonly prisma: PrismaService,
     private readonly userService: CUserService,
   ) {}
+
+  async createFromOut(createOrderDto: CreateFromOutOrderDto) {
+    const user = await this.prisma.user.findFirst({
+      where: { email: DefaultConfig.iamwebApi.moneyboxUserEmail },
+    });
+
+    createOrderDto.orderTitle = `[${createOrderDto.outName}] ${createOrderDto.orderTitle}`;
+
+    const order: OrderEntity = await this.prisma.orders.create({
+      data: {
+        status: OrderStatus.IAMWEB_ORDER,
+        isIamweb: true,
+        iamwebOrderNo: '-100',
+
+        orderTitle: createOrderDto.orderTitle,
+
+        boardingDate: createOrderDto.boardingDate,
+
+        startLocation: createOrderDto.startLocation,
+        startAddress: createOrderDto.startAddress,
+        startAirport: createOrderDto.goalLocation,
+
+        goalLocation: createOrderDto.goalLocation,
+        goalAddress: createOrderDto.goalAddress,
+        goalAirport: '',
+        information: JSON.stringify(createOrderDto.information),
+        company: createOrderDto.company,
+        else01: createOrderDto.else01,
+        else02: createOrderDto.else02,
+
+        userId: user.id,
+
+        customName: createOrderDto.customName,
+        customPhone: createOrderDto.customPhone,
+        orderTime: '' + Date.now().toString().substring(0, 10),
+      },
+    });
+
+    // 텔레그램 알림 전송
+    await SendDispatchTelegramUtils.sendIamweb(
+      `[${createOrderDto.outName}]: 배차어드민ID:${order.company}-${order.key} 주문이 접수되었습니다.`,
+    );
+
+    return order;
+  }
 
   async create(createOrderDto: CreateOrderDto, userId: string) {
     const user = await this.userService.findId(userId);

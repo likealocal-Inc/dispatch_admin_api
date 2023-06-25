@@ -16,6 +16,7 @@ import { AUTH_MUST } from 'src/config/core/decorators/api/auth.must/auth.must.de
 import { PagingDto } from 'src/libs/core/dtos/paging';
 import { CustomException } from 'src/config/core/exceptions/custom.exception';
 import { ExceptionCodeList } from 'src/config/core/exceptions/exception.code';
+import { CreateFromOutOrderDto } from './dto/create.from.out.order.dto';
 
 @Controller('order')
 export class OrderController {
@@ -101,16 +102,28 @@ export class OrderController {
     }
   }
 
-  @Post('/send.txt')
-  async sendTxt(@Body() body: string) {
-    return HttpUtils.makeAPIResponse(
-      true,
-      await this.orderService.sendTxt(
-        body['phones'],
-        body['txt'],
-        body['orderId'],
-        body['isJini'],
-      ),
-    );
+  // @Post('/send.txt')
+  // async sendTxt(@Body() body: string) {
+  //   return HttpUtils.makeAPIResponse(
+  //     true,
+  //     await this.orderService.sendTxt(
+  //       body['phones'],
+  //       body['txt'],
+  //       body['orderId'],
+  //       body['isJini'],
+  //     ),
+  //   );
+  // }
+
+  @Post('out')
+  async createFromOut(@Body() createOrderDto: CreateFromOutOrderDto) {
+    try {
+      return HttpUtils.makeAPIResponse(
+        true,
+        await this.orderService.createFromOut(createOrderDto),
+      );
+    } catch (err) {
+      throw new CustomException(ExceptionCodeList.ERROR);
+    }
   }
 }

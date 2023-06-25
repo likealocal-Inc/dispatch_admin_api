@@ -251,8 +251,9 @@ export const DefaultConfig = {
       },
     },
 
-    iamwebOrderUserEmail: 'sj_han@likealocal.co.kr',
+    iamwebOrderUserEmail: 'kanghao0124@mhqglobal.com',
     iamwebOrderUserCompany: 'likealocal',
+    moneyboxUserEmail: 'sj_han@likealocal.co.kr',
   },
   telegram: {
     jin: {
