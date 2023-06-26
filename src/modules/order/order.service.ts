@@ -25,7 +25,7 @@ export class OrderService {
 
   async createFromOut(createOrderDto: CreateFromOutOrderDto) {
     const user = await this.prisma.user.findFirst({
-      where: { email: DefaultConfig.iamwebApi.moneyboxUserEmail },
+      where: { email: DefaultConfig.iamwebApi.iamwebOrderUserEmail },
     });
 
     createOrderDto.orderTitle = `[${createOrderDto.outName}] ${createOrderDto.orderTitle}`;
@@ -122,7 +122,7 @@ export class OrderService {
     return res;
   }
 
-  async findAll(pagingDto: PagingDto, user = null) {
+  async findAll(pagingDto: PagingDto, user: CUserEntity = null) {
     let count;
     let orders;
     const skip = +pagingDto.page * +pagingDto.size;
@@ -132,9 +132,10 @@ export class OrderService {
     await this.prisma.$transaction(async (tx) => {
       let where: any = {};
 
-      // User 정보가 있고 일반 사용자(업체)면 해당 업체의 테이터만 조회
+      // User 정보가 있고 일반 사용자(업체)면 해당 사용자의 이메일로 조회
       if (user !== null && user.role === Role.USER) {
-        where = { ...where, company: user.company };
+        //where = { ...where, company: user.company };
+        where = { ...where, userId: user.id };
       }
 
       // 상태값
