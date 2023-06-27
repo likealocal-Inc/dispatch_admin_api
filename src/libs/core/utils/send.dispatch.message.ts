@@ -21,23 +21,48 @@ export const SendDispatchTelegramUtils = {
       message,
     );
   },
+
+  dispatchMessageJin: async (company, orderId, msg) => {
+    await SendDispatchTelegramUtils.sendJin(`${company}/${orderId} [${msg}]`);
+  },
+  dispatchMessageLikealocal: async (company, orderId, msg) => {
+    await SendDispatchTelegramUtils.sendIamweb(
+      `${company}/${orderId} [${msg}]`,
+    );
+  },
+
   // 배차요청
   dispatchRequest: async (company, orderId) => {
-    await SendDispatchTelegramUtils.sendJin(
-      `${company}/${orderId} 배차요청이 접수 되었습니다.`,
+    await SendDispatchTelegramUtils.dispatchMessageJin(
+      company,
+      orderId,
+      '배차요청이 접수 되었습니다.',
     );
+    // await SendDispatchTelegramUtils.sendJin(
+    //   `${company}/${orderId} 배차요청이 접수 되었습니다.`,
+    // );
   },
   // 배차요청 정보 변경
   dispatchRequestInfoChange: async (company, orderId) => {
-    await SendDispatchTelegramUtils.sendJin(
-      `${company}/${orderId} 배차요청이 변경 되었습니다.`,
+    await SendDispatchTelegramUtils.dispatchMessageJin(
+      company,
+      orderId,
+      '배차요청이 변경 되었습니다.',
     );
+    // await SendDispatchTelegramUtils.sendJin(
+    //   `${company}/${orderId} 배차요청이 변경 되었습니다.`,
+    // );
   },
   // 배차요청 취소
   dispatchRequestCancel: async (company, orderId) => {
-    await SendDispatchTelegramUtils.sendJin(
-      `${company}/${orderId} 배차요청이 취소 되었습니다.`,
+    await SendDispatchTelegramUtils.dispatchMessageJin(
+      company,
+      orderId,
+      ' 배차요청이 취소 되었습니다.',
     );
+    // await SendDispatchTelegramUtils.sendJin(
+    //   `${company}/${orderId} 배차요청이 취소 되었습니다.`,
+    // );
   },
 };
 

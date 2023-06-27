@@ -5,19 +5,71 @@ import { EnumUpdateLogType, LogFiles } from 'src/config/core/files/log.files';
 
 export const DispatchUtils = {
   processStatus: async (order: OrderEntity) => {
-    /// 배차요청
-    if (order.status === OrderStatus.DISPATCH_REQUEST) {
-      await SendDispatchTelegramUtils.dispatchRequest(
+    let message = '';
+    switch (order.status) {
+      case OrderStatus.DISPATCH_REQUEST:
+        message = '배차요청';
+        break;
+      case OrderStatus.DISPATCH_REQUEST_CANCEL:
+        message = '배차요청취소';
+        break;
+      case OrderStatus.DISPATCH_COMPLETE:
+        message = '배차완료';
+        break;
+      case OrderStatus.DISPATCH_CANCEL:
+        message = '배차취소';
+        break;
+      case OrderStatus.DISPATCH_ING:
+        message = '배차중';
+        break;
+      case OrderStatus.DISPATCH_MODIFIED:
+        message = '배차수정';
+        break;
+      case OrderStatus.DISPATCH_NO:
+        message = '미배차';
+        break;
+      case OrderStatus.DONE:
+        message = '배차종료';
+        break;
+    }
+    await SendDispatchTelegramUtils.dispatchMessageJin(
+      order.company,
+      `${order.company}-${order.key}`,
+      message,
+    );
+    if (order.isIamweb === true) {
+      await SendDispatchTelegramUtils.dispatchMessageLikealocal(
         order.company,
         `${order.company}-${order.key}`,
-      );
-      // 배차요청 취소
-    } else if (order.status === OrderStatus.DISPATCH_REQUEST_CANCEL) {
-      await SendDispatchTelegramUtils.dispatchRequestCancel(
-        order.company,
-        `${order.company}-${order.key}`,
+        message,
       );
     }
+
+    // /// 배차요청
+    // if (order.status === OrderStatus.DISPATCH_REQUEST) {
+    //   await SendDispatchTelegramUtils.dispatchRequest(
+    //     order.company,
+    //     `${order.company}-${order.key}`,
+    //   );
+    //   // 배차요청 취소
+    // } else if (order.status === OrderStatus.DISPATCH_REQUEST_CANCEL) {
+    //   await SendDispatchTelegramUtils.dispatchRequestCancel(
+    //     order.company,
+    //     `${order.company}-${order.key}`,
+    //   );
+    // } else if (order.status === OrderStatus.DISPATCH_COMPLETE) {
+    //   await SendDispatchTelegramUtils.dispatchMessage(
+    //     order.company,
+    //     `${order.company}-${order.key}`,
+    //     '배차완료 되었습니다.',
+    //   );
+    // } else {
+    //   await SendDispatchTelegramUtils.dispatchMessage(
+    //     order.company,
+    //     `${order.company}-${order.key}`,
+    //     order.status === OrderStatus.DONE,
+    //   );
+    // }
   },
   updateDispatchRequestStatus: async (order: OrderEntity) => {
     /// 배차요청
