@@ -61,7 +61,7 @@ export class OrderService {
     });
 
     // 텔레그램 알림 전송
-    await SendDispatchTelegramUtils.sendIamweb(
+    SendDispatchTelegramUtils.sendIamweb(
       `[${createOrderDto.outName}]: 배차어드민ID:${order.company}-${order.key} 주문이 접수되었습니다.`,
     );
 

@@ -102,18 +102,18 @@ export class OrderController {
     }
   }
 
-  // @Post('/send.txt')
-  // async sendTxt(@Body() body: string) {
-  //   return HttpUtils.makeAPIResponse(
-  //     true,
-  //     await this.orderService.sendTxt(
-  //       body['phones'],
-  //       body['txt'],
-  //       body['orderId'],
-  //       body['isJini'],
-  //     ),
-  //   );
-  // }
+  @Post('/send.txt')
+  async sendTxt(@Body() body: string) {
+    return HttpUtils.makeAPIResponse(
+      true,
+      await this.orderService.sendTxt(
+        body['phones'],
+        body['txt'],
+        body['orderId'],
+        body['isJini'],
+      ),
+    );
+  }
 
   @Post('out')
   async createFromOut(@Body() createOrderDto: CreateFromOutOrderDto) {
