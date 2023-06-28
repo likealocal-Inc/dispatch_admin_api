@@ -134,8 +134,15 @@ export class OrderService {
 
       // User 정보가 있고 일반 사용자(업체)면 해당 사용자의 이메일로 조회
       if (user !== null && user.role === Role.USER) {
+        if (user.company === '강남구청') {
+          where = {
+            ...where,
+            OR: [{ userId: user.id }, { company: '강남구 의료관광 컨시어지' }],
+          };
+        } else {
+          where = { ...where, userId: user.id };
+        }
         //where = { ...where, company: user.company };
-        where = { ...where, userId: user.id };
       }
 
       // 상태값
