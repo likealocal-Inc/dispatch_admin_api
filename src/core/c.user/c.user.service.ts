@@ -108,6 +108,7 @@ export class CUserService {
           phone: updateCUserDto.phone,
           position: updateCUserDto.position,
           name: updateCUserDto.name,
+          company: updateCUserDto.company,
         },
       });
     } else {
@@ -121,6 +122,7 @@ export class CUserService {
           phone: updateCUserDto.phone,
           position: updateCUserDto.position,
           name: updateCUserDto.name,
+          company: updateCUserDto.company,
         },
       });
     }
