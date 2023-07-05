@@ -7,7 +7,7 @@ import { CUserService } from 'src/core/c.user/c.user.service';
 import { OrderEntity } from './entities/order.entity';
 import { CUserEntity } from 'src/core/c.user/entities/c.user.entity';
 import { ListOrderDto } from './dto/list.order.dto';
-import { OrderStatus, Role } from '@prisma/client';
+import { OrderStatus, Prisma, Role } from '@prisma/client';
 import { DispatchUtils } from 'src/libs/core/utils/dispatch.utils';
 import { TextSendUtils } from 'src/libs/core/utils/text.send.utils';
 import { DateUtils } from 'src/libs/core/utils/date.utils';
@@ -15,6 +15,7 @@ import { EnumUpdateLogType } from 'src/config/core/files/log.files';
 import { CreateFromOutOrderDto } from './dto/create.from.out.order.dto';
 import { DefaultConfig } from 'src/config/default.config';
 import { SendDispatchTelegramUtils } from 'src/libs/core/utils/send.dispatch.message';
+import { SearchDto } from './dto/search.dto';
 
 @Injectable()
 export class OrderService {
@@ -304,5 +305,74 @@ export class OrderService {
       });
     }
     return await TextSendUtils.send(phones, txt);
+  }
+
+  async search(searchDto: SearchDto) {
+    const sqlFields = `O.created as "주문생성일"
+    , O."iamwebOrderNo" as "아임웹주문번호"
+    , O."orderTitle"  as "상품타입"
+    , O."boardingDate" as "탑승일"
+    , O."startLocation" as "출발지명"
+    , O."startAddress"  as "출발주소"
+    , O."startAirport"  as "출발공항"
+    , O."goalLocation"  as "목적지명"
+    , O."goalAddress"   as "목적지주소"
+    , O."goalAirport"   as "목적지공항"
+    , O.information     as "추가정보"
+    , O.else01 as "아임웹주문 - 추가정보"
+    , O.else02 as "배차취소 및 업데이트 정보"
+    , O.status  as "상태값"
+    , O.company  as "주문생성자 회사"
+    , O.company||'-'||O."key"  as "주문ID"
+    , O."customName" as "고객이름" 
+    , O."customPhone" as "고객연락처"
+    , O."isJiniSendTxt"  as "지니문자전송여부"
+    , D."carCompany" as "배차회사"
+    , D."jiniName" as "지니이름"
+    , D."jiniPhone" as "지니연락처"
+    , D."carInfo" as "지니차량정보"
+    , D."baseFare" as "기본요금"
+    , D."addFare" as "추가요금"
+    , D."exceedFare" as "초과요금"
+    , D."totalFare" as "전체요금"
+    , D."carType" as "차량타입"
+    , D."payType" as "결제타입"
+    , D.memo  as "메모"`;
+    const res = {};
+    if (searchDto.type === '1') {
+      const newLocal = Prisma.sql([
+        `SELECT ${sqlFields}
+        FROM "admin"."Orders" AS O
+      left JOIN "admin"."Dispatch" AS D on D."orderId" = O.id
+       where O."iamwebOrderNo" = '-100' and  O.created >= '${searchDto.start}' AND O.created  <= ( DATE '${searchDto.end}' + INTERVAL '1 day') ORDER BY O.created desc ;
+       `,
+      ]);
+      res['jin'] = await this.prisma.$queryRaw(newLocal);
+      const iamweb = Prisma.sql([
+        `SELECT ${sqlFields}
+        FROM "admin"."Orders" AS O
+      left JOIN "admin"."Dispatch" AS D on D."orderId" = O.id
+       where O."iamwebOrderNo" <> '-100' and  O.created >= '${searchDto.start}' AND O.created  <= ( DATE '${searchDto.end}' + INTERVAL '1 day') ORDER BY O.created desc ;
+       `,
+      ]);
+      res['iw'] = await this.prisma.$queryRaw(iamweb);
+    } else {
+      const newLocal = Prisma.sql([
+        `SELECT ${sqlFields}
+        FROM "admin"."Orders" AS O
+      left JOIN "admin"."Dispatch" AS D on D."orderId" = O.id
+       where O."iamwebOrderNo" = '-100' and  TO_TIMESTAMP(O."boardingDate", 'Dy Mon DD YYYY HH24:MI:SS "GMT+0900"') AT TIME ZONE 'KST' >= '${searchDto.start}' AND TO_TIMESTAMP(O."boardingDate", 'Dy Mon DD YYYY HH24:MI:SS "GMT+0900"') AT TIME ZONE 'KST' < ( DATE '${searchDto.end}' + INTERVAL '2 day') ORDER BY O."boardingDate" desc `,
+      ]);
+      res['jin'] = await this.prisma.$queryRaw(newLocal);
+      const iamweb = Prisma.sql([
+        `SELECT ${sqlFields}
+        FROM "admin"."Orders" AS O
+      left JOIN "admin"."Dispatch" AS D on D."orderId" = O.id
+       where O."iamwebOrderNo" <> '-100' and  TO_TIMESTAMP(O."boardingDate", 'YYYY-MM-DD"T"HH24:MI:SS.MSZ') AT TIME ZONE 'KST' >= '${searchDto.start}' AND TO_TIMESTAMP(O."boardingDate", 'YYYY-MM-DD"T"HH24:MI:SS.MSZ') AT TIME ZONE 'KST' < ( DATE '${searchDto.end}' + INTERVAL '2 day') ORDER BY O."boardingDate" desc `,
+      ]);
+      res['iw'] = await this.prisma.$queryRaw(iamweb);
+    }
+
+    return res;
   }
 }

@@ -17,6 +17,7 @@ import { PagingDto } from 'src/libs/core/dtos/paging';
 import { CustomException } from 'src/config/core/exceptions/custom.exception';
 import { ExceptionCodeList } from 'src/config/core/exceptions/exception.code';
 import { CreateFromOutOrderDto } from './dto/create.from.out.order.dto';
+import { SearchDto } from './dto/search.dto';
 
 @Controller('order')
 export class OrderController {
@@ -125,5 +126,11 @@ export class OrderController {
     } catch (err) {
       throw new CustomException(ExceptionCodeList.ERROR);
     }
+  }
+
+  // @AUTH_MUST('ADMIN')
+  @Post('search')
+  async search(@Body() searchDto: SearchDto) {
+    return await this.orderService.search(searchDto);
   }
 }
