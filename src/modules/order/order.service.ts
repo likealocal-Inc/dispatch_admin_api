@@ -338,39 +338,24 @@ export class OrderService {
     , D."carType" as "차량타입"
     , D."payType" as "결제타입"
     , D.memo  as "메모"`;
-    const res = {};
+    let res;
     if (searchDto.type === '1') {
-      const newLocal = Prisma.sql([
-        `SELECT ${sqlFields}
-        FROM "admin"."Orders" AS O
-      left JOIN "admin"."Dispatch" AS D on D."orderId" = O.id
-       where O."iamwebOrderNo" = '-100' and  O.created >= '${searchDto.start}' AND O.created  <= ( DATE '${searchDto.end}' + INTERVAL '1 day') ORDER BY O.created desc ;
-       `,
-      ]);
-      res['jin'] = await this.prisma.$queryRaw(newLocal);
       const iamweb = Prisma.sql([
         `SELECT ${sqlFields}
         FROM "admin"."Orders" AS O
       left JOIN "admin"."Dispatch" AS D on D."orderId" = O.id
-       where O."iamwebOrderNo" <> '-100' and  O.created >= '${searchDto.start}' AND O.created  <= ( DATE '${searchDto.end}' + INTERVAL '1 day') ORDER BY O.created desc ;
+       where O.created  <= '${searchDto.end} 23:59'  AND O.created >= '${searchDto.start} 00:00' ORDER BY O.created desc
        `,
       ]);
-      res['iw'] = await this.prisma.$queryRaw(iamweb);
+      res = await this.prisma.$queryRaw(iamweb);
     } else {
-      const newLocal = Prisma.sql([
-        `SELECT ${sqlFields}
-        FROM "admin"."Orders" AS O
-      left JOIN "admin"."Dispatch" AS D on D."orderId" = O.id
-       where O."iamwebOrderNo" = '-100' and  TO_TIMESTAMP(O."boardingDate", 'Dy Mon DD YYYY HH24:MI:SS "GMT+0900"') AT TIME ZONE 'KST' >= '${searchDto.start}' AND TO_TIMESTAMP(O."boardingDate", 'Dy Mon DD YYYY HH24:MI:SS "GMT+0900"') AT TIME ZONE 'KST' < ( DATE '${searchDto.end}' + INTERVAL '2 day') ORDER BY O."boardingDate" desc `,
-      ]);
-      res['jin'] = await this.prisma.$queryRaw(newLocal);
       const iamweb = Prisma.sql([
         `SELECT ${sqlFields}
         FROM "admin"."Orders" AS O
       left JOIN "admin"."Dispatch" AS D on D."orderId" = O.id
-       where O."iamwebOrderNo" <> '-100' and  TO_TIMESTAMP(O."boardingDate", 'YYYY-MM-DD"T"HH24:MI:SS.MSZ') AT TIME ZONE 'KST' >= '${searchDto.start}' AND TO_TIMESTAMP(O."boardingDate", 'YYYY-MM-DD"T"HH24:MI:SS.MSZ') AT TIME ZONE 'KST' < ( DATE '${searchDto.end}' + INTERVAL '2 day') ORDER BY O."boardingDate" desc `,
+       where O."boardingDate"  <= '${searchDto.end} 23:59'  AND O."boardingDate" >= '${searchDto.start} 00:00' ORDER BY O."boardingDate" desc`,
       ]);
-      res['iw'] = await this.prisma.$queryRaw(iamweb);
+      res = await this.prisma.$queryRaw(iamweb);
     }
 
     return res;
