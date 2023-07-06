@@ -22,7 +22,7 @@ export class IamwebOrderBatch {
     this.iamwebUtils = new IamwebUtils(this.httpService);
   }
 
-  @Cron('0 10 * * * *')
+  @Cron('1 * * * * *')
   async orderBatch() {
     const info = '아임웹 주문데이터 조회';
     console.log(`----------- ${info} -------------`);

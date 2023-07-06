@@ -92,7 +92,7 @@ export const DefaultConfig = {
       pickup: 83,
       sanding: 122,
     },
-    orderSearchDays: 5, // 주문 데이터 조회 날 기준 0:당일
+    orderSearchDays: 1, // 주문 데이터 조회 날 기준 0:당일
     responseCodeList: [
       { CODE: -1, DESC: '잘못된 API 키 또는 시크릿' },
       { CODE: -2, DESC: '잘못된 액세스 토큰으로 접근' },
