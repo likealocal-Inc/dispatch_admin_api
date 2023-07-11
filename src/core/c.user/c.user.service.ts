@@ -45,7 +45,7 @@ export class CUserService {
   ): Promise<FindResposeDto<CUserEntity[]>> {
     let count;
     const size = +findUserDto.size;
-    const page = +findUserDto.page;
+    const page = +findUserDto.page * +findUserDto.size;
     let users;
     await this.prisma.$transaction(async (tx) => {
       const user = await this.findId(userId);
